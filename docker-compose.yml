@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mongo:7.0
+    container_name: medsync-mongo-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: medsync
+      MONGO_INITDB_ROOT_PASSWORD: medsync_password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - medsync-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  api:
+    container_name: historico-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://medsync:medsync_password@db:27017/medsync_db?authSource=admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - medsync-network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+
+networks:
+  medsync-network:
+    driver: bridge
