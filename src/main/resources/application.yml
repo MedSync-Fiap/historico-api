@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: medsync-historico-api
+
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://medsync:medsync_password@localhost:27017/medsync_db?authSource=admin}
+
+  graphql:
+    graphiql:
+      enabled: true
+    http:
+      path: /graphql
+    schema:
+      locations: classpath:graphql/**/
+      file-extensions: .graphqls
