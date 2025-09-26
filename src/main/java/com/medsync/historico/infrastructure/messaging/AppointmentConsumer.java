@@ -32,8 +32,8 @@ public class AppointmentConsumer {
                 }
                 case EDITION -> {
                     log.info("Evento de edição recebido para o agendamento ID: {}", event.consultaId());
-                    // TODO: Implementar lógica de edição
-                    log.info("Histórico médico atualizado com ID:");
+                    MedicalHistory medicalHistory = medicalHistoryService.updateAppointmentInMedicalHistory(event);
+                    log.info("Histórico médico atualizado com ID: {}", medicalHistory.getId());
                 }
                 default -> log.warn("Tipo de evento desconhecido: {}", event.tipoEvento());
             }

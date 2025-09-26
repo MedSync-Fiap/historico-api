@@ -7,7 +7,6 @@ import java.util.Optional;
 public interface MedicalHistoryGateway {
 
     MedicalHistory save(MedicalHistory medicalHistory);
-    MedicalHistory update(MedicalHistory medicalHistory);
     Optional<MedicalHistory> findByPatientId(Long patientId);
 
 }

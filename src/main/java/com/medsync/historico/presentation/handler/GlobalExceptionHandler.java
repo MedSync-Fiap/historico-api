@@ -1,5 +1,6 @@
 package com.medsync.historico.presentation.handler;
 
+import com.medsync.historico.application.exceptions.AppointmentNotFoundException;
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse("MEDICAL_HISTORY_NOT_FOUND", ex.getMessage(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(AppointmentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAppointmentNotFoundException(AppointmentNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("APPOINTMENT_NOT_FOUND", ex.getMessage(), LocalDateTime.now()));
     }
 
     public record ErrorResponse(

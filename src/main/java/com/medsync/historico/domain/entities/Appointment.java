@@ -31,4 +31,15 @@ public class Appointment {
         this.clinicalNotes = event.observacoes();
         this.actionLogs = actionLogs;
     }
+
+    public void updateFieldsWithNewValues(AppointmentEvent event) {
+        this.appointmentDate = event.dataHora() != null ? event.dataHora() : this.appointmentDate;
+        this.status = event.status() != null ? AppointmentStatus.valueOf(event.status()) : this.status;
+        this.clinicalNotes = event.observacoes() != null ? event.observacoes() : this.clinicalNotes;
+    }
+
+    public void updateDoctor(AppointmentEvent event) {
+        this.doctor = new Doctor(event);
+    }
+
 }

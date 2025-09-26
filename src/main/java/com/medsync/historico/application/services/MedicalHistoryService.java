@@ -5,6 +5,7 @@ import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundExcept
 import com.medsync.historico.application.usecases.CreateMedicalHistoryUseCase;
 import com.medsync.historico.application.usecases.SaveNewAppointmentUseCase;
 import com.medsync.historico.application.usecases.SearchMedicalHistoryByPatientIdUseCase;
+import com.medsync.historico.application.usecases.UpdateAppointmentUseCase;
 import com.medsync.historico.domain.entities.MedicalHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class MedicalHistoryService {
     private final SearchMedicalHistoryByPatientIdUseCase searchMedicalHistoryByPatientIdUseCase;
     private final SaveNewAppointmentUseCase saveNewAppointmentUseCase;
     private final CreateMedicalHistoryUseCase createMedicalHistoryUseCase;
+    private final UpdateAppointmentUseCase updateAppointmentUseCase;
 
     public MedicalHistory createMedicalHistory(AppointmentEvent event) {
         return createMedicalHistoryUseCase.execute(event);
@@ -28,6 +30,11 @@ public class MedicalHistoryService {
         } catch (MedicalHistoryNotFoundException e) {
             return createMedicalHistory(event);
         }
+    }
+
+    public MedicalHistory updateAppointmentInMedicalHistory(AppointmentEvent event) {
+        MedicalHistory existingHistory = getMedicalHistoryByPatientId(event.pacienteId());
+        return updateAppointmentUseCase.execute(event, existingHistory);
     }
 
     public MedicalHistory getMedicalHistoryByPatientId(Long patientId) {
