@@ -1,18 +1,29 @@
 package com.medsync.historico.domain.entities;
 
+import com.medsync.historico.application.dto.AppointmentEvent;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Patient {
 
-    private String id;
+    private Long id;
     private String name;
     private String email;
     private LocalDate dateOfBirth;
     private String cpf;
-    private List<Phone> phones;
+
+    public Patient(AppointmentEvent event) {
+        this.id = event.pacienteId();
+        this.name = event.pacienteNome();
+        this.email = event.pacienteEmail();
+        this.dateOfBirth = event.pacienteDataNascimento();
+        this.cpf = event.pacienteCpf();
+    }
 
 }

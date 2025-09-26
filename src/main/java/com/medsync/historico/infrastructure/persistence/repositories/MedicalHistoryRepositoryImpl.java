@@ -2,7 +2,8 @@ package com.medsync.historico.infrastructure.persistence.repositories;
 
 import com.medsync.historico.domain.entities.MedicalHistory;
 import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
-import com.medsync.historico.presentation.mappers.MedicalHistoryMapper;
+import com.medsync.historico.infrastructure.persistence.document.MedicalHistoryDocument;
+import com.medsync.historico.infrastructure.persistence.mappers.MedicalHistoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +17,10 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     private final MedicalHistoryMapper mapper;
 
     @Override
-    public MedicalHistory create(MedicalHistory medicalHistory) {
-        return null;
+    public MedicalHistory save(MedicalHistory medicalHistory) {
+        MedicalHistoryDocument document = mapper.toDocument(medicalHistory);
+        MedicalHistoryDocument savedDocument = repository.save(document);
+        return mapper.toDomain(savedDocument);
     }
 
     @Override
@@ -26,7 +29,7 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     }
 
     @Override
-    public Optional<MedicalHistory> findByPatientId(String patientId) {
+    public Optional<MedicalHistory> findByPatientId(Long patientId) {
         return repository.findByPatientId(patientId)
                 .map(mapper::toDomain);
     }

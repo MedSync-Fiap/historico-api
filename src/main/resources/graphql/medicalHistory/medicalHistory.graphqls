@@ -1,18 +1,18 @@
 type MedicalHistoryResponse {
-    id: ID
     patientInfo: PatientInfo!
     appointments: [Appointment!]!
 }
 
 type PatientInfo {
-    id: ID
+    id: ID!
     name: String!
     cpf: String!
     email: String
+    dateOfBirth: String
 }
 
 type Appointment {
-    id: ID
+    id: ID!
     doctorInfo: DoctorInfo!
     appointmentDateTime: String!
     appointmentStatus: AppointmentStatus!
@@ -20,18 +20,19 @@ type Appointment {
 }
 
 type DoctorInfo {
-    id: ID
+    id: ID!
     name: String!
-    specialty: String!
+    specialty: String
 }
 
 type CreateUser {
-    id: ID
-    name: String!
+    id: ID!
+    name: String
+    email: String!
+    role: String!
 }
 
 type ActionLog {
-    id: ID
     actionType: ActionType!
     timestamp: String!
     user: CreateUser!

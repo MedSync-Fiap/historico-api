@@ -14,3 +14,21 @@ spring:
     schema:
       locations: classpath:graphql/**/
       file-extensions: .graphqls
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:/}
+
+server:
+  port: 8081
+
+app:
+  name: medsync-historico
+  version: 1.0.0
+  rabbitmq:
+    exchange-consultas: ex_consultas
+    queue-historico: q_historico_consultas
+    routing-key-historico: consulta.historico
