@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface MedicalHistoryMongoRepository extends MongoRepository<MedicalHistoryDocument, String> {
-    Optional<MedicalHistoryDocument> findByPatientId(String patientId);
+    Optional<MedicalHistoryDocument> findByPatientId(Long patientId);
 }

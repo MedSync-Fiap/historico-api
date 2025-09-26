@@ -26,7 +26,7 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://medsync:medsync_password@db:27017/medsync_db?authSource=admin
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       db:
         condition: service_healthy

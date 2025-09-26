@@ -1,4 +1,4 @@
-package com.medsync.historico.presentation.mappers;
+package com.medsync.historico.infrastructure.persistence.mappers;
 
 import com.medsync.historico.domain.entities.MedicalHistory;
 import com.medsync.historico.infrastructure.persistence.document.MedicalHistoryDocument;

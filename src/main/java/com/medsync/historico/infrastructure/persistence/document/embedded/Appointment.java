@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record Appointment(
-        String id,
+        Long id,
+        AppointmentStatus status,
         DoctorInfo doctor,
         @Field("created_by") CreateUserInfo createdBy,
-        @Field("date_time") LocalDateTime dateTime,
-        AppointmentStatus status,
-        @Field("actionLogs") List<ActionLog> actionLogs
+        @Field("appointment_date") LocalDateTime appointmentDate,
+        @Field("action_logs") List<ActionLog> actionLogs
 ) {}

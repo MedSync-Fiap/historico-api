@@ -1,11 +1,11 @@
 package com.medsync.historico.infrastructure.persistence.document.embedded;
 
-import java.util.List;
+import java.time.LocalDate;
 
 public record PatientInfo
-(   String id,
+(   Long id,
     String name,
     String cpf,
     String email,
-    List<Phone> phones
+    LocalDate dateOfBirth
 ) {}

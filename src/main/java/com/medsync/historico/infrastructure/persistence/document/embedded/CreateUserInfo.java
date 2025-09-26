@@ -1,6 +1,8 @@
 package com.medsync.historico.infrastructure.persistence.document.embedded;
 
 public record CreateUserInfo(
-        String id,
-        String name
+        Long id,
+        String name,
+        String email,
+        String role
 ) {}
