@@ -24,11 +24,6 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     }
 
     @Override
-    public MedicalHistory update(MedicalHistory medicalHistory) {
-        return null;
-    }
-
-    @Override
     public Optional<MedicalHistory> findByPatientId(Long patientId) {
         return repository.findByPatientId(patientId)
                 .map(mapper::toDomain);
