@@ -1,6 +1,6 @@
 package com.medsync.historico.infrastructure.persistence.document.embedded;
 
-public record CreateUserInfo(
+public record CreateUserDocument(
         Long id,
         String name,
         String email,

@@ -2,7 +2,6 @@ package com.medsync.historico.application.usecases;
 
 import com.medsync.historico.application.dto.AppointmentEvent;
 import com.medsync.historico.application.exceptions.AppointmentNotFoundException;
-import com.medsync.historico.domain.entities.ActionLog;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.Doctor;
 import com.medsync.historico.domain.entities.MedicalHistory;
@@ -60,7 +59,7 @@ class UpdateAppointmentUseCaseTest {
             assertEquals(medicalHistory, result);
             assertEquals(1, appointment.getActionLogs().size());
             assertNotNull(appointment.getActionLogs().getFirst());
-            assertEquals(ActionType.EDITION, appointment.getActionLogs().getFirst().getType());
+            assertEquals(ActionType.EDITION, appointment.getActionLogs().getFirst().getActionType());
         }
 
         @Test

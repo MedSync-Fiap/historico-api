@@ -4,9 +4,9 @@ import com.medsync.historico.domain.enums.ActionType;
 
 import java.time.LocalDateTime;
 
-public record ActionLog(
-        ActionType type,
-        CreateUserInfo user,
+public record ActionLogDocument(
+        ActionType actionType,
+        CreateUserDocument user,
         LocalDateTime timestamp
 ) {
 }

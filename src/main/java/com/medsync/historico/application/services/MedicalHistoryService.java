@@ -2,10 +2,8 @@ package com.medsync.historico.application.services;
 
 import com.medsync.historico.application.dto.AppointmentEvent;
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
-import com.medsync.historico.application.usecases.CreateMedicalHistoryUseCase;
-import com.medsync.historico.application.usecases.SaveNewAppointmentUseCase;
-import com.medsync.historico.application.usecases.SearchMedicalHistoryByPatientIdUseCase;
-import com.medsync.historico.application.usecases.UpdateAppointmentUseCase;
+import com.medsync.historico.application.usecases.*;
+import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,10 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MedicalHistoryService {
 
-    private final SearchMedicalHistoryByPatientIdUseCase searchMedicalHistoryByPatientIdUseCase;
+    private final GetMedicalHistoryByPatientIdUseCase getMedicalHistoryByPatientIdUseCase;
     private final SaveNewAppointmentUseCase saveNewAppointmentUseCase;
     private final CreateMedicalHistoryUseCase createMedicalHistoryUseCase;
     private final UpdateAppointmentUseCase updateAppointmentUseCase;
+    private final GetAppointmentByIdUseCase getAppointmentByIdUseCase;
 
     public MedicalHistory createMedicalHistory(AppointmentEvent event) {
         return createMedicalHistoryUseCase.execute(event);
@@ -38,7 +37,11 @@ public class MedicalHistoryService {
     }
 
     public MedicalHistory getMedicalHistoryByPatientId(Long patientId) {
-        return searchMedicalHistoryByPatientIdUseCase.execute(patientId);
+        return getMedicalHistoryByPatientIdUseCase.execute(patientId);
+    }
+
+    public Appointment getAppointmentById(Long appointmentId, Long patientId) {
+        return getAppointmentByIdUseCase.execute(appointmentId, patientId);
     }
 
 }

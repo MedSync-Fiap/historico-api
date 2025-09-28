@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ActionLog {
 
-    private ActionType type;
+    private ActionType actionType;
     private CreateUser user;
     private LocalDateTime timestamp;
 
-    public ActionLog(AppointmentEvent event, ActionType type) {
-        this.type = type;
+    public ActionLog(AppointmentEvent event, ActionType actionType) {
+        this.actionType = actionType;
         this.user = new CreateUser(event);
         this.timestamp = event.timestamp();
     }

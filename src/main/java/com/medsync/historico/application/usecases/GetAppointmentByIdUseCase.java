@@ -1,25 +1,25 @@
 package com.medsync.historico.application.usecases;
 
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
-import com.medsync.historico.domain.entities.MedicalHistory;
+import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
-public class SearchMedicalHistoryByPatientIdUseCase {
+public class GetAppointmentByIdUseCase {
 
     private final MedicalHistoryGateway medicalHistoryGateway;
 
-    public MedicalHistory execute(Long patientId) {
-        Optional<MedicalHistory> medicalHistoryOpt = medicalHistoryGateway.findByPatientId(patientId);
-        if (medicalHistoryOpt.isEmpty()) {
+    public Appointment execute(Long appointmentId, Long patientId) {
+        try {
+            return medicalHistoryGateway.findAppointmentById(appointmentId, patientId);
+        } catch (NoSuchElementException e) {
             throw new MedicalHistoryNotFoundException(patientId);
         }
-        return medicalHistoryOpt.get();
     }
 
 }
