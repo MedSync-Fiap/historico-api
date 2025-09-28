@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -51,8 +53,7 @@ class GetAppointmentByIdUseCaseTest {
 
             assertThrows(MedicalHistoryNotFoundException.class, () -> getAppointmentByIdUseCase.execute(appointmentId, patientId));
         }
-        
-    }
 
+    }
 
 }
