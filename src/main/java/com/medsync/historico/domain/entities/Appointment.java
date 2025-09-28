@@ -1,0 +1,45 @@
+package com.medsync.historico.domain.entities;
+
+import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.domain.enums.AppointmentStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Appointment {
+
+    private Long id;
+    private Doctor doctor;
+    private CreateUser createUser;
+    private LocalDateTime appointmentDateTime;
+    private AppointmentStatus status;
+    private String clinicalNotes;
+    private List<ActionLog> actionLogs;
+
+    public Appointment(AppointmentEvent event, List<ActionLog> actionLogs) {
+        this.id = event.consultaId();
+        this.doctor = new Doctor(event);
+        this.createUser = new CreateUser(event);
+        this.appointmentDateTime = event.dataHora();
+        this.status = AppointmentStatus.AGENDADA;
+        this.clinicalNotes = event.observacoes();
+        this.actionLogs = actionLogs;
+    }
+
+    public void updateFieldsWithNewValues(AppointmentEvent event) {
+        this.appointmentDateTime = event.dataHora() != null ? event.dataHora() : this.appointmentDateTime;
+        this.status = event.status() != null ? AppointmentStatus.valueOf(event.status()) : this.status;
+        this.clinicalNotes = event.observacoes() != null ? event.observacoes() : this.clinicalNotes;
+    }
+
+    public void updateDoctor(AppointmentEvent event) {
+        this.doctor = new Doctor(event);
+    }
+
+}

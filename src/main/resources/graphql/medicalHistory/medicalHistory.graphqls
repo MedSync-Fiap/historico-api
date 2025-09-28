@@ -1,0 +1,61 @@
+type MedicalHistoryResponse {
+    patient: Patient!
+    appointments: [Appointment!]!
+}
+
+type Patient {
+    id: ID!
+    name: String!
+    cpf: String!
+    email: String
+    dateOfBirth: String
+}
+
+type Appointment {
+    id: ID!
+    doctor: Doctor!
+    appointmentDateTime: String!
+    status: AppointmentStatus!
+    actionLogs: [ActionLog!]
+}
+
+type AppointmentResponse {
+    id: ID!
+    doctor: Doctor!
+    appointmentDateTime: String!
+    status: AppointmentStatus!
+}
+
+type Doctor {
+    id: ID!
+    name: String!
+    specialty: String
+}
+
+type CreateUser {
+    id: ID!
+    name: String
+    email: String!
+    role: String!
+}
+
+type ActionLog {
+    actionType: ActionType!
+    timestamp: String!
+    user: CreateUser!
+}
+
+enum AppointmentStatus {
+    AGENDADA,
+    CONFIRMADA,
+    CANCELADA,
+    REALIZADA,
+    FALTA
+}
+
+enum ActionType {
+    CREATION
+    EDITION
+    CANCELLATION
+    COMPLETION
+}
