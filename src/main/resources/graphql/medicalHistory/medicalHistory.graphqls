@@ -1,9 +1,9 @@
 type MedicalHistoryResponse {
-    patientInfo: PatientInfo!
+    patient: Patient!
     appointments: [Appointment!]!
 }
 
-type PatientInfo {
+type Patient {
     id: ID!
     name: String!
     cpf: String!
@@ -13,13 +13,20 @@ type PatientInfo {
 
 type Appointment {
     id: ID!
-    doctorInfo: DoctorInfo!
+    doctor: Doctor!
     appointmentDateTime: String!
-    appointmentStatus: AppointmentStatus!
+    status: AppointmentStatus!
     actionLogs: [ActionLog!]
 }
 
-type DoctorInfo {
+type AppointmentResponse {
+    id: ID!
+    doctor: Doctor!
+    appointmentDateTime: String!
+    status: AppointmentStatus!
+}
+
+type Doctor {
     id: ID!
     name: String!
     specialty: String
@@ -39,9 +46,11 @@ type ActionLog {
 }
 
 enum AppointmentStatus {
-    SCHEDULED
-    COMPLETED
-    CANCELLED
+    AGENDADA,
+    CONFIRMADA,
+    CANCELADA,
+    REALIZADA,
+    FALTA
 }
 
 enum ActionType {

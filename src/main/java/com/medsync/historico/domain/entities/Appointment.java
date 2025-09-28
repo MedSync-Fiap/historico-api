@@ -17,7 +17,7 @@ public class Appointment {
     private Long id;
     private Doctor doctor;
     private CreateUser createUser;
-    private LocalDateTime appointmentDate;
+    private LocalDateTime appointmentDateTime;
     private AppointmentStatus status;
     private String clinicalNotes;
     private List<ActionLog> actionLogs;
@@ -26,14 +26,14 @@ public class Appointment {
         this.id = event.consultaId();
         this.doctor = new Doctor(event);
         this.createUser = new CreateUser(event);
-        this.appointmentDate = event.dataHora();
+        this.appointmentDateTime = event.dataHora();
         this.status = AppointmentStatus.AGENDADA;
         this.clinicalNotes = event.observacoes();
         this.actionLogs = actionLogs;
     }
 
     public void updateFieldsWithNewValues(AppointmentEvent event) {
-        this.appointmentDate = event.dataHora() != null ? event.dataHora() : this.appointmentDate;
+        this.appointmentDateTime = event.dataHora() != null ? event.dataHora() : this.appointmentDateTime;
         this.status = event.status() != null ? AppointmentStatus.valueOf(event.status()) : this.status;
         this.clinicalNotes = event.observacoes() != null ? event.observacoes() : this.clinicalNotes;
     }

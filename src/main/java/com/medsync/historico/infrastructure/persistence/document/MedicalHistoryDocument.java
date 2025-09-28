@@ -1,7 +1,7 @@
 package com.medsync.historico.infrastructure.persistence.document;
 
-import com.medsync.historico.infrastructure.persistence.document.embedded.Appointment;
-import com.medsync.historico.infrastructure.persistence.document.embedded.PatientInfo;
+import com.medsync.historico.infrastructure.persistence.document.embedded.AppointmentDocument;
+import com.medsync.historico.infrastructure.persistence.document.embedded.PatientDocument;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,9 +21,9 @@ public class MedicalHistoryDocument {
     private String id;
 
     @Field("patient")
-    private PatientInfo patient;
+    private PatientDocument patient;
 
     @Field("appointments")
-    private List<Appointment> appointments;
+    private List<AppointmentDocument> appointments;
 
 }

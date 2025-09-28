@@ -2,7 +2,7 @@ package com.medsync.historico.infrastructure.persistence.document.embedded;
 
 import java.time.LocalDate;
 
-public record PatientInfo
+public record PatientDocument
 (   Long id,
     String name,
     String cpf,

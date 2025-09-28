@@ -6,11 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record Appointment(
+public record AppointmentDocument(
         Long id,
         AppointmentStatus status,
-        DoctorInfo doctor,
-        @Field("created_by") CreateUserInfo createdBy,
-        @Field("appointment_date") LocalDateTime appointmentDate,
-        @Field("action_logs") List<ActionLog> actionLogs
+        DoctorDocument doctor,
+        @Field("created_by") CreateUserDocument createdBy,
+        @Field("appointment_datetime") LocalDateTime appointmentDateTime,
+        @Field("action_logs") List<ActionLogDocument> actionLogs
 ) {}
