@@ -5,8 +5,11 @@ import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundExcept
 import com.medsync.historico.application.usecases.*;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
+import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,7 @@ public class MedicalHistoryService {
     private final CreateMedicalHistoryUseCase createMedicalHistoryUseCase;
     private final UpdateAppointmentUseCase updateAppointmentUseCase;
     private final GetAppointmentByIdUseCase getAppointmentByIdUseCase;
+    private final MedicalHistoryGateway medicalHistoryGateway;
 
     public MedicalHistory createMedicalHistory(AppointmentEvent event) {
         return createMedicalHistoryUseCase.execute(event);
@@ -42,6 +46,10 @@ public class MedicalHistoryService {
 
     public Appointment getAppointmentById(Long appointmentId, Long patientId) {
         return getAppointmentByIdUseCase.execute(appointmentId, patientId);
+    }
+
+    public List<MedicalHistory> getAllMedicalHistories() {
+        return medicalHistoryGateway.findAll();
     }
 
 }

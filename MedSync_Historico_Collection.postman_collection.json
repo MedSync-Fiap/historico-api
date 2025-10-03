@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "historico-api-collection",
+		"name": "MedSync - Histórico API (GraphQL)",
+		"description": "Collection para teste dos endpoints GraphQL do serviço de histórico do MedSync",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GraphQL Queries",
+			"item": [
+				{
+					"name": "Buscar Histórico Médico por Paciente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query GetMedicalHistoryByPatientId($patientId: ID!) {\\n    getMedicalHistoryByPatientId(patientId: $patientId) {\\n      patient {\\n        id\\n        name\\n        cpf\\n        email\\n        dateOfBirth\\n      }\\n      appointments {\\n        id\\n        appointmentDateTime\\n        status\\n        doctor {\\n          id\\n          name\\n          specialty\\n        }\\n        actionLogs {\\n          actionType\\n          timestamp\\n          user {\\n            name\\n            role\\n          }\\n        }\\n      }\\n    }\\n  }\",\n  \"variables\": {\n    \"patientId\": \"{{patient_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Buscar histórico médico completo de um paciente específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Consulta Específica",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query GetAppointmentById($appointmentId: ID!, $patientId: ID!) {\\n    getAppointmentById(appointmentId: $appointmentId, patientId: $patientId) {\\n      id\\n      appointmentDateTime\\n      status\\n      doctor {\\n        id\\n        name\\n        specialty\\n      }\\n    }\\n  }\",\n  \"variables\": {\n    \"appointmentId\": \"{{appointment_id}}\",\n    \"patientId\": \"{{patient_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Buscar uma consulta específica por ID do paciente e da consulta"
+					},
+					"response": []
+				},
+				{
+					"name": "Query Simples - Apenas Dados do Paciente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query {\\n    getMedicalHistoryByPatientId(patientId: \\\"{{patient_id}}\\\") {\\n      patient {\\n        id\\n        name\\n        cpf\\n      }\\n    }\\n  }\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Query simples para buscar apenas dados básicos do paciente"
+					},
+					"response": []
+				},
+				{
+					"name": "Query - Apenas Consultas Futuras",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query {\\n    getMedicalHistoryByPatientId(patientId: \\\"{{patient_id}}\\\") {\\n      patient {\\n        name\\n      }\\n      appointments {\\n        id\\n        appointmentDateTime\\n        status\\n        doctor {\\n          name\\n          specialty\\n        }\\n      }\\n    }\\n  }\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Query para buscar todas as consultas de um paciente (futuras e passadas)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GraphiQL Interface",
+			"item": [
+				{
+					"name": "Acessar GraphiQL",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/graphiql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphiql"
+							]
+						},
+						"description": "Interface GraphiQL para testes interativos das queries GraphQL"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Verificar status de saúde do serviço"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "patient_id",
+			"value": "123",
+			"type": "string"
+		},
+		{
+			"key": "appointment_id",
+			"value": "456",
+			"type": "string"
+		}
+	]
+}
