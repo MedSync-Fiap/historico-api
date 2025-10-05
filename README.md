@@ -31,11 +31,42 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)** e **Clean Archi
 
 ## 🛠️ Configuração e Execução
 
-### 1. Usando Docker (Recomendado)
+### 1. Ambiente Completo MedSync (Recomendado)
+
+Para executar o **ambiente completo** com todos os microsserviços do MedSync, utilize o `docker-compose.prod.yml` disponível no repositório principal:
 
 ```bash
-# Clonar o repositório
-git clone <repository-url>
+# Clonar todos os repositórios do MedSync
+git clone https://github.com/MedSync-Fiap/agendamento-api.git
+git clone https://github.com/MedSync-Fiap/historico-api.git
+git clone https://github.com/MedSync-Fiap/notificacao-api.git
+
+# Executar o ambiente completo
+cd agendamento-api
+docker-compose -f docker-compose.prod.yml up -d
+
+# Serviços disponíveis:
+# - Agendamento API: http://localhost:8080
+# - Histórico API: http://localhost:8081
+# - Notificação API: http://localhost:8082
+# - PostgreSQL: localhost:5432
+# - MongoDB: localhost:27017
+# - RabbitMQ Management: http://localhost:15672
+# - MailHog: http://localhost:8025
+```
+
+O `docker-compose.prod.yml` inclui:
+- **PostgreSQL** (para agendamento-api)
+- **MongoDB** (para historico-api)
+- **RabbitMQ** (para comunicação entre serviços de agendamento e notificação)
+- **MailHog** (para testes de email)
+- **Todos os microsserviços** configurados e interconectados
+
+### 2. Execução Individual com Docker
+
+```bash
+# Clonar apenas este repositório
+git clone https://github.com/MedSync-Fiap/historico-api.git
 cd historico-api
 
 # Executar MongoDB via Docker
@@ -52,7 +83,7 @@ docker run -d --name mongodb-medsync \
 # GraphiQL estará disponível em http://localhost:8081/graphiql
 ```
 
-### 2. Execução com Docker Build
+### 3. Execução com Docker Build
 
 ```bash
 # 1. Construir a imagem
@@ -300,6 +331,8 @@ Serviço de Cadastro/Agendamento → HTTP/GraphQL → MedicalHistoryController �
                                                          ↓
                                                Atualiza/Cria Histórico no MongoDB
 ```
+
+> **💡 Dica**: Para testar a integração completa entre os serviços, utilize o `docker-compose.prod.yml` disponível no [repositório agendamento-api](https://github.com/MedSync-Fiap/agendamento-api), que configura todo o ecossistema MedSync automaticamente.
 
 ### Tipos de Operações
 
