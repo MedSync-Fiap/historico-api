@@ -1,6 +1,6 @@
 # MedSync - Serviço de Histórico de Consultas
 
-Este é o serviço de histórico de consultas do sistema MedSync, responsável por armazenar e consultar o histórico médico dos pacientes, incluindo consultas finalizadas e agendadas. Recebe informações do serviço de cadastro e agendamento através do RabbitMQ para manter um registro completo das consultas e suas respectivas mudanças de estado.
+Este é o serviço de histórico de consultas do sistema MedSync, responsável por armazenar e consultar o histórico médico dos pacientes, incluindo consultas finalizadas e agendadas. Recebe informações do serviço de cadastro e agendamento através de **mutations GraphQL**, proporcionando uma comunicação direta e síncrona para manter um registro completo das consultas e suas respectivas mudanças de estado.
 
 ## 🏗️ Arquitetura
 
@@ -8,56 +8,96 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)** e **Clean Archi
 
 - **Domain**: Entidades, repositórios e regras de negócio do histórico médico
 - **Application**: Casos de uso e orquestração para manipulação do histórico
-- **Infrastructure**: Persistência no MongoDB, configurações RabbitMQ e integrações externas
-- **Presentation**: Controllers GraphQL e DTOs para consultas do histórico
+- **Infrastructure**: Persistência no MongoDB e integrações externas
+- **Presentation**: Controllers GraphQL (Queries e Mutations) e DTOs para consultas e manipulação do histórico
 
 ## 🚀 Tecnologias
 
 - **Java 21**
 - **Spring Boot 3.5.5**
 - **MongoDB** (banco de dados NoSQL)
-- **Spring GraphQL** (API GraphQL para consultas)
-- **RabbitMQ** (message broker para eventos)
+- **Spring GraphQL** (API GraphQL para consultas e mutations)
 - **MapStruct** (mapeamento de objetos)
 - **Lombok** (redução de boilerplate)
 - **Gradle** (gerenciamento de dependências)
-- **Docker & Docker Compose** (containerização)
+- **Docker** (containerização)
 
 ## 📋 Pré-requisitos
 
 - Java 21
 - Gradle 8.5+
-- Docker e Docker Compose
+- Docker
 - MongoDB 7.0+
-- RabbitMQ 3.12+
 
 ## 🛠️ Configuração e Execução
 
-### 1. Usando Docker Compose (Recomendado)
+### 1. Ambiente Completo MedSync (Recomendado)
+
+Para executar o **ambiente completo** com todos os microsserviços do MedSync, utilize o `docker-compose.prod.yml` disponível no repositório principal:
 
 ```bash
-# Clonar o repositório
-git clone <repository-url>
+# Clonar todos os repositórios do MedSync
+git clone https://github.com/MedSync-Fiap/agendamento-api.git
+git clone https://github.com/MedSync-Fiap/historico-api.git
+git clone https://github.com/MedSync-Fiap/notificacao-api.git
+
+# Executar o ambiente completo
+cd agendamento-api
+docker-compose -f docker-compose.prod.yml up -d
+
+# Serviços disponíveis:
+# - Agendamento API: http://localhost:8080
+# - Histórico API: http://localhost:8081
+# - Notificação API: http://localhost:8082
+# - PostgreSQL: localhost:5432
+# - MongoDB: localhost:27017
+# - RabbitMQ Management: http://localhost:15672
+# - MailHog: http://localhost:8025
+```
+
+O `docker-compose.prod.yml` inclui:
+- **PostgreSQL** (para agendamento-api)
+- **MongoDB** (para historico-api)
+- **RabbitMQ** (para comunicação entre serviços de agendamento e notificação)
+- **MailHog** (para testes de email)
+- **Todos os microsserviços** configurados e interconectados
+
+### 2. Execução Individual com Docker
+
+```bash
+# Clonar apenas este repositório
+git clone https://github.com/MedSync-Fiap/historico-api.git
 cd historico-api
 
-# Executar com Docker Compose
-docker-compose up -d
+# Executar MongoDB via Docker
+docker run -d --name mongodb-medsync \
+  -e MONGO_INITDB_ROOT_USERNAME=medsync \
+  -e MONGO_INITDB_ROOT_PASSWORD=medsync_password \
+  -p 27017:27017 \
+  mongo:7.0
+
+# Executar a aplicação
+./gradlew bootRun
 
 # O serviço estará disponível em http://localhost:8081
 # GraphiQL estará disponível em http://localhost:8081/graphiql
 ```
 
-### 2. Execução Local
+### 3. Execução com Docker Build
 
 ```bash
-# 1. Iniciar MongoDB
-docker-compose up -d db
+# 1. Construir a imagem
+docker build -t historico-api .
 
-# 2. Compilar o projeto
-./gradlew build
+# 2. Executar com MongoDB
+docker run -d --name mongodb-medsync \
+  -e MONGO_INITDB_ROOT_USERNAME=medsync \
+  -e MONGO_INITDB_ROOT_PASSWORD=medsync_password \
+  -p 27017:27017 \
+  mongo:7.0
 
 # 3. Executar a aplicação
-./gradlew bootRun
+docker run -p 8081:8081 --link mongodb-medsync:mongo historico-api
 ```
 
 ## 📊 Banco de Dados
@@ -73,7 +113,7 @@ Documento principal que armazena o histórico médico completo do paciente:
 {
   "_id": "ObjectId",
   "patient": {
-    "id": 123,
+    "id": "550e8400-e29b-41d4-a716-446655440000",
     "name": "João Silva",
     "cpf": "12345678901",
     "email": "joao@email.com",
@@ -81,15 +121,15 @@ Documento principal que armazena o histórico médico completo do paciente:
   },
   "appointments": [
     {
-      "id": 456,
+      "id": "850e8400-e29b-41d4-a716-446655440225",
       "status": "AGENDADA",
       "doctor": {
-        "id": 789,
+        "id": "750e8400-e29b-41d4-a716-446655440123",
         "name": "Dr. Maria Santos",
         "specialty": "Cardiologia"
       },
       "created_by": {
-        "id": 101,
+        "id": "950e8400-e29b-41d4-a716-446655440456",
         "name": "Recepcionista Ana",
         "email": "ana@medsync.com",
         "role": "ENFERMEIRO"
@@ -100,7 +140,7 @@ Documento principal que armazena o histórico médico completo do paciente:
           "actionType": "CREATION",
           "timestamp": "2023-12-10T10:00:00",
           "user": {
-            "id": 101,
+            "id": "950e8400-e29b-41d4-a716-446655440456",
             "name": "Recepcionista Ana",
             "email": "ana@medsync.com",
             "role": "ENFERMEIRO"
@@ -120,14 +160,14 @@ Documento principal que armazena o histórico médico completo do paciente:
 
 ## 🔌 API GraphQL
 
-O serviço expõe uma API GraphQL para consultas do histórico médico:
+O serviço expõe uma API GraphQL completa para consultas e manipulação do histórico médico:
 
 ### Queries Disponíveis
 
 #### 1. Buscar Histórico Médico por ID do Paciente
 ```graphql
 query {
-  getMedicalHistoryByPatientId(patientId: "123") {
+  getMedicalHistoryByPatientId(patientId: "550e8400-e29b-41d4-a716-446655440000") {
     patient {
       id
       name
@@ -160,7 +200,10 @@ query {
 #### 2. Buscar Consulta Específica por ID
 ```graphql
 query {
-  getAppointmentById(appointmentId: "456", patientId: "123") {
+  getAppointmentById(
+    appointmentId: "850e8400-e29b-41d4-a716-446655440225", 
+    patientId: "550e8400-e29b-41d4-a716-446655440000"
+  ) {
     id
     appointmentDateTime
     status
@@ -173,45 +216,152 @@ query {
 }
 ```
 
+### Mutations Disponíveis
+
+#### 1. Criar Nova Consulta no Histórico
+```graphql
+mutation {
+  saveNewAppointment(newAppointmentInput: {
+    consultaId: "850e8400-e29b-41d4-a716-446655440225"
+    dataHora: "2024-01-15T14:30:00"
+    status: "AGENDADA"
+    observacoes: "Consulta de rotina"
+    tipoEvento: "CRIADA"
+    timestamp: "2024-01-10T10:00:00"
+    
+    # Dados do paciente
+    pacienteId: "550e8400-e29b-41d4-a716-446655440000"
+    pacienteNome: "João Silva"
+    pacienteCpf: "12345678901"
+    pacienteEmail: "joao@email.com"
+    pacienteDataNascimento: "1985-01-15"
+    
+    # Dados do médico
+    medicoId: "750e8400-e29b-41d4-a716-446655440123"
+    medicoNome: "Dr. Maria Santos"
+    medicoCpf: "98765432100"
+    medicoEmail: "maria.santos@medsync.com"
+    medicoEspecialidade: "Cardiologia"
+    
+    # Dados do usuário
+    usuarioId: "950e8400-e29b-41d4-a716-446655440456"
+    usuarioNome: "Recepcionista Ana"
+    usuarioEmail: "ana@medsync.com"
+    usuarioRole: "ENFERMEIRO"
+  }) {
+    patient {
+      id
+      name
+    }
+    appointments {
+      id
+      status
+      appointmentDateTime
+    }
+  }
+}
+```
+
+#### 2. Atualizar Consulta Existente
+```graphql
+mutation {
+  updateAppointment(updateAppointmentInput: {
+    consultaId: "850e8400-e29b-41d4-a716-446655440225"
+    dataHora: "2024-01-15T15:00:00"
+    status: "CONFIRMADA"
+    observacoes: "Consulta confirmada pelo paciente"
+    tipoEvento: "EDITADA"
+    timestamp: "2024-01-12T09:00:00"
+    
+    # Dados do paciente (obrigatórios)
+    pacienteId: "550e8400-e29b-41d4-a716-446655440000"
+    pacienteNome: "João Silva"
+    pacienteCpf: "12345678901"
+    pacienteEmail: "joao@email.com"
+    pacienteDataNascimento: "1985-01-15"
+    
+    # Dados do médico (podem ser alterados)
+    medicoId: "750e8400-e29b-41d4-a716-446655440123"
+    medicoNome: "Dr. Maria Santos"
+    medicoCpf: "98765432100"
+    medicoEmail: "maria.santos@medsync.com"
+    medicoEspecialidade: "Cardiologia"
+    
+    # Dados do usuário que fez a alteração
+    usuarioId: "950e8400-e29b-41d4-a716-446655440456"
+    usuarioNome: "Recepcionista Ana"
+    usuarioEmail: "ana@medsync.com"
+    usuarioRole: "ENFERMEIRO"
+  }) {
+    patient {
+      id
+      name
+    }
+    appointments {
+      id
+      status
+      appointmentDateTime
+      actionLogs {
+        actionType
+        timestamp
+        user {
+          name
+          role
+        }
+      }
+    }
+  }
+}
+```
+
 ### Enums Disponíveis
 
 - **AppointmentStatus**: `AGENDADA`, `CONFIRMADA`, `CANCELADA`, `REALIZADA`, `FALTA`
 - **ActionType**: `CREATION`, `EDITION`, `CANCELLATION`, `COMPLETION`
+- **EventType**: `CRIADA`, `EDITADA`
 
-## 📨 Sistema de Eventos e Mensageria
+## 🔄 Integração com Serviço de Agendamento
 
-### Arquitetura de Eventos
-O serviço consome eventos do RabbitMQ para manter o histórico atualizado:
+### Arquitetura de Comunicação
+O serviço recebe chamadas diretas do serviço de agendamento através de **mutations GraphQL**:
 
-#### Eventos Consumidos
-- **`AppointmentEvent`**: Evento completo com dados da consulta, paciente, médico e usuário
-
-#### Fluxo de Eventos
+#### Fluxo de Integração
 ```
-Serviço de Cadastro/Agendamento → RabbitMQ → AppointmentConsumer → MedicalHistoryService
-                                              ↓
-                                    Atualiza/Cria Histórico no MongoDB
+Serviço de Cadastro/Agendamento → HTTP/GraphQL → MedicalHistoryController → MedicalHistoryService
+                                                         ↓
+                                               Atualiza/Cria Histórico no MongoDB
 ```
 
-### Configuração RabbitMQ
+> **💡 Dica**: Para testar a integração completa entre os serviços, utilize o `docker-compose.prod.yml` disponível no [repositório agendamento-api](https://github.com/MedSync-Fiap/agendamento-api), que configura todo o ecossistema MedSync automaticamente.
 
-#### Exchange
-- `ex_consultas`: Exchange principal para eventos de consultas
+### Tipos de Operações
 
-#### Fila
-- `q_historico_consultas`: Fila específica para o serviço de histórico
+#### Criação de Consulta
+- **Mutation**: `saveNewAppointment`
+- **Validação**: Verifica se `tipoEvento = "CRIADA"`
+- **Comportamento**: 
+  - Se histórico médico existe → Adiciona nova consulta
+  - Se histórico não existe → Cria novo histórico com a consulta
 
-#### Routing Key
-- `consulta.historico`: Para eventos direcionados ao histórico
+#### Atualização de Consulta
+- **Mutation**: `updateAppointment`
+- **Validação**: Verifica se `tipoEvento = "EDITADA"`
+- **Comportamento**: 
+  - Localiza consulta existente no histórico
+  - Atualiza campos modificados
+  - Adiciona log de ação com timestamp e usuário
 
-#### Tipos de Eventos Processados
-- **CREATION**: Criação de nova consulta → Adiciona ao histórico
-- **EDITION**: Edição de consulta existente → Atualiza histórico e adiciona log de ação
+### Tratamento de Erros
 
-### Consumer Configuration
-- **Acknowledgment Manual**: Para garantia de processamento
-- **JSON Message Converter**: Para deserialização automática
-- **Error Handling**: Logging detalhado para troubleshooting
+#### GraphQL Exception Resolver
+- **Validação de Input**: Tipos de evento inválidos retornam `BAD_REQUEST`
+- **Recursos Não Encontrados**: Retorna `NOT_FOUND` com mensagem específica
+- **Erros Internos**: Tratamento e logging de exceções inesperadas
+
+#### Logs de Auditoria
+- **Criação**: Log automático com `ActionType.CREATION`
+- **Edição**: Log automático com `ActionType.EDITION`
+- **Rastreabilidade**: Cada ação registra usuário, timestamp e tipo de operação
 
 ## 🧪 Testes
 
@@ -270,16 +420,16 @@ src/test/java/com/medsync/historico/
 Sistema de logging estruturado para rastreabilidade:
 
 ```java
-// Exemplo de logs no AppointmentConsumer
-log.info("Evento de criação recebido para o agendamento ID: {}", event.consultaId());
-log.info("Histórico médico criado/atualizado com ID: {}", medicalHistory.getId());
-log.error("Erro ao processar o evento: {}", event, e);
+// Exemplo de logs no MedicalHistoryController
+log.info("New appointment added in medical history with ID: {}", medicalHistory.getId());
+log.info("Medical history updated with ID: {}", medicalHistory.getId());
+log.error("Erro ao processar requisição GraphQL: {}", input, e);
 ```
 
 ### Níveis de Log
-- **INFO**: Processamento normal de eventos
-- **WARN**: Tipos de eventos desconhecidos
-- **ERROR**: Falhas no processamento
+- **INFO**: Processamento normal de mutations e queries
+- **WARN**: Validações de tipo de evento
+- **ERROR**: Falhas no processamento de requisições GraphQL
 
 ## 🔧 Configurações
 
@@ -288,18 +438,15 @@ log.error("Erro ao processar o evento: {}", event, e);
 ```bash
 # MongoDB
 SPRING_DATA_MONGODB_URI=mongodb://medsync:medsync_password@localhost:27017/medsync_db?authSource=admin
-
-# RabbitMQ
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_USERNAME=guest
-RABBITMQ_PASSWORD=guest
-RABBITMQ_VHOST=/
+MONGO_USERNAME=medsync
+MONGO_PASSWORD=medsync_password
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_DB=medsync_db
 
 # Configurações da Aplicação
-app.rabbitmq.exchange-consultas=ex_consultas
-app.rabbitmq.queue-historico=q_historico_consultas
-app.rabbitmq.routing-key-historico=consulta.historico
+app.name=medsync-historico
+app.version=1.0.0
 ```
 
 ### Configuração GraphQL
@@ -321,53 +468,62 @@ spring:
 ### Problemas Comuns
 
 1. **Erro de conexão com MongoDB**
-   - Verificar se o MongoDB está rodando: `docker-compose ps`
+   - Verificar se o MongoDB está rodando: `docker ps | grep mongo`
    - Verificar credenciais no `application.yml`
-   - Testar conexão: `mongosh mongodb://localhost:27017`
+   - Testar conexão: `mongosh mongodb://medsync:medsync_password@localhost:27017/medsync_db?authSource=admin`
 
-2. **Erro de conexão com RabbitMQ**
-   - Verificar se o RabbitMQ está rodando
-   - Acessar interface de management: http://localhost:15672
-   - Verificar se as filas estão criadas corretamente
-
-3. **Eventos não sendo consumidos**
-   - Verificar logs do consumer
-   - Verificar se a fila `q_historico_consultas` existe
-   - Verificar routing key e binding
-
-4. **Erro ao consultar GraphQL**
+2. **Erro ao executar mutations GraphQL**
    - Verificar se o GraphiQL está acessível: http://localhost:8081/graphiql
-   - Validar sintaxe da query
+   - Validar sintaxe da mutation e tipos de dados
+   - Verificar se todos os campos obrigatórios estão preenchidos
+   - Confirmar se o `tipoEvento` é válido ("CRIADA" ou "EDITADA")
+
+3. **Erro ao consultar histórico existente**
+   - Verificar se o `patientId` está correto
    - Verificar se os dados existem no MongoDB
+   - Validar formato dos IDs (devem ser strings)
+
+4. **Erro de validação de tipos de evento**
+   - Verificar se `tipoEvento` para `saveNewAppointment` é "CRIADA"
+   - Verificar se `tipoEvento` para `updateAppointment` é "EDITADA"
+   - Caso contrário, será retornado erro `BAD_REQUEST`
 
 ## 🎯 Funcionalidades Principais
 
-### ✅ Consumo de Eventos
-- Processamento automático de eventos de criação/edição de consultas
-- Criação automática de histórico médico quando não existe
-- Manutenção de logs de ações para auditoria
+### ✅ API GraphQL Completa
+- **Queries**: Busca de histórico completo por paciente e consultas específicas
+- **Mutations**: Criação e atualização de consultas no histórico
+- **Interface GraphiQL**: Para testes e desenvolvimento
+- **Tratamento de Erros**: Sistema robusto de exception handling
 
-### ✅ Consultas GraphQL
-- Busca de histórico completo por paciente
-- Consulta de consultas específicas
-- Interface GraphiQL para testes
+### ✅ Integração Direta com Serviço de Agendamento
+- Comunicação síncrona via HTTP/GraphQL
+- Validação de tipos de evento em tempo real
+- Resposta imediata sobre sucesso/falha das operações
 
-### ✅ Persistência MongoDB
+### ✅ Persistência MongoDB Otimizada
 - Armazenamento desnormalizado para performance
 - Estrutura flexível para diferentes tipos de consulta
 - Índices otimizados para consultas por paciente
+- Suporte a IDs como strings (UUIDs)
 
-### ✅ Rastreabilidade
-- Log completo de todas as ações em cada consulta
-- Histórico de mudanças de status
+### ✅ Auditoria e Rastreabilidade
+- Log automático de todas as ações em cada consulta
+- Histórico completo de mudanças de status
 - Identificação do usuário que realizou cada ação
+- Timestamps precisos para todas as operações
+
+### ✅ Gestão Inteligente do Histórico
+- Criação automática de histórico médico quando não existe
+- Adição de consultas a históricos existentes
+- Atualização de consultas com manutenção do histórico de ações
 
 ## 📚 Documentação Adicional
 
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
 - [Spring GraphQL Documentation](https://spring.io/projects/spring-graphql)
 - [MongoDB Documentation](https://www.mongodb.com/docs/)
-- [RabbitMQ Documentation](https://www.rabbitmq.com/documentation.html)
+- [GraphQL Documentation](https://graphql.org/learn/)
 - [MapStruct Documentation](https://mapstruct.org/documentation/)
 
 ## 🤝 Contribuição
