@@ -1,6 +1,6 @@
 package com.medsync.historico.domain.entities;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.enums.ActionType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +15,9 @@ public class ActionLog {
     private CreateUser user;
     private LocalDateTime timestamp;
 
-    public ActionLog(AppointmentEvent event, ActionType actionType) {
+    public ActionLog(AppointmentInput input, ActionType actionType) {
         this.actionType = actionType;
-        this.user = new CreateUser(event);
-        this.timestamp = event.timestamp();
+        this.user = new CreateUser(input);
+        this.timestamp = input.timestamp();
     }
 }

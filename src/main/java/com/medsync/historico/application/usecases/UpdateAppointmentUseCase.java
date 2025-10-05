@@ -1,6 +1,6 @@
 package com.medsync.historico.application.usecases;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.application.exceptions.AppointmentNotFoundException;
 import com.medsync.historico.domain.entities.ActionLog;
 import com.medsync.historico.domain.entities.Appointment;
@@ -16,18 +16,18 @@ public class UpdateAppointmentUseCase {
 
     private final MedicalHistoryGateway medicalHistoryGateway;
 
-    public MedicalHistory execute(AppointmentEvent event, MedicalHistory medicalHistory) {
+    public MedicalHistory execute(AppointmentInput updateAppointmentInput, MedicalHistory medicalHistory) {
 
-        ActionLog actionLog = new ActionLog(event, ActionType.EDITION);
+        ActionLog actionLog = new ActionLog(updateAppointmentInput, ActionType.EDITION);
 
         Appointment appointmentToUpdate = medicalHistory.getAppointments().stream()
-                .filter(appointment -> appointment.getId().equals(event.consultaId()))
+                .filter(appointment -> appointment.getId().equals(updateAppointmentInput.consultaId()))
                 .findFirst()
-                .orElseThrow(() -> new AppointmentNotFoundException(event.consultaId()));
+                .orElseThrow(() -> new AppointmentNotFoundException(updateAppointmentInput.consultaId()));
 
-        appointmentToUpdate.updateFieldsWithNewValues(event);
-        if (!appointmentToUpdate.getDoctor().getId().equals(event.medicoId())) {
-            appointmentToUpdate.updateDoctor(event);
+        appointmentToUpdate.updateFieldsWithNewValues(updateAppointmentInput);
+        if (!appointmentToUpdate.getDoctor().getId().equals(updateAppointmentInput.medicoId())) {
+            appointmentToUpdate.updateDoctor(updateAppointmentInput);
         }
 
         appointmentToUpdate.getActionLogs().add(actionLog);

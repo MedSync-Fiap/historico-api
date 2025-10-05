@@ -1,6 +1,6 @@
 package com.medsync.historico.application.usecases;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
 import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
@@ -33,13 +33,13 @@ class SaveNewAppointmentUseCaseTest {
         @Test
         @DisplayName("Should add new appointment to existing list and save medical history")
         void shouldAddNewAppointmentToExistingListAndSave() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory medicalHistory = mock(MedicalHistory.class);
             List<Appointment> existingAppointments = new ArrayList<>();
             when(medicalHistory.getAppointments()).thenReturn(existingAppointments);
             when(medicalHistoryGateway.save(medicalHistory)).thenReturn(medicalHistory);
 
-            MedicalHistory result = saveNewAppointmentUseCase.execute(event, medicalHistory);
+            MedicalHistory result = saveNewAppointmentUseCase.execute(input, medicalHistory);
 
             assertEquals(medicalHistory, result);
             assertEquals(1, existingAppointments.size());
@@ -48,12 +48,12 @@ class SaveNewAppointmentUseCaseTest {
         @Test
         @DisplayName("Should create new appointment list if null and save medical history")
         void shouldCreateNewAppointmentListIfNullAndSave() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory medicalHistory = mock(MedicalHistory.class);
             when(medicalHistory.getAppointments()).thenReturn(null);
             when(medicalHistoryGateway.save(medicalHistory)).thenReturn(medicalHistory);
 
-            MedicalHistory result = saveNewAppointmentUseCase.execute(event, medicalHistory);
+            MedicalHistory result = saveNewAppointmentUseCase.execute(input, medicalHistory);
 
             verify(medicalHistory).setAppointments(anyList());
             assertEquals(medicalHistory, result);
@@ -62,12 +62,12 @@ class SaveNewAppointmentUseCaseTest {
         @Test
         @DisplayName("Should return null if gateway returns null")
         void shouldReturnNullIfGatewayReturnsNull() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory medicalHistory = mock(MedicalHistory.class);
             when(medicalHistory.getAppointments()).thenReturn(new java.util.ArrayList<>());
             when(medicalHistoryGateway.save(medicalHistory)).thenReturn(null);
 
-            assertNull(saveNewAppointmentUseCase.execute(event, medicalHistory));
+            assertNull(saveNewAppointmentUseCase.execute(input, medicalHistory));
         }
 
     }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class AppointmentResponse {
 
-    private Long id;
+    private String id;
     private Doctor doctor;
     private CreateUser createUser;
     private LocalDateTime appointmentDateTime;

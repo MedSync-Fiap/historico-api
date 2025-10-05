@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://medsync:medsync_password@localhost:27017/medsync_db?authSource=admin}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://${MONGO_USERNAME:medsync}:${MONGO_PASSWORD:medsync_password}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DB:medsync_db}?authSource=admin}
 
   graphql:
     graphiql:
@@ -15,12 +15,6 @@ spring:
       locations: classpath:graphql/**/
       file-extensions: .graphqls
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-    virtual-host: ${RABBITMQ_VHOST:/}
 
 server:
   port: 8081
@@ -28,7 +22,3 @@ server:
 app:
   name: medsync-historico
   version: 1.0.0
-  rabbitmq:
-    exchange-consultas: ex_consultas
-    queue-historico: q_historico_consultas
-    routing-key-historico: consulta.historico

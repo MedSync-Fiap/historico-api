@@ -14,7 +14,7 @@ public class GetAppointmentByIdUseCase {
 
     private final MedicalHistoryGateway medicalHistoryGateway;
 
-    public Appointment execute(Long appointmentId, Long patientId) {
+    public Appointment execute(String appointmentId, String patientId) {
         try {
             return medicalHistoryGateway.findAppointmentById(appointmentId, patientId);
         } catch (NoSuchElementException e) {

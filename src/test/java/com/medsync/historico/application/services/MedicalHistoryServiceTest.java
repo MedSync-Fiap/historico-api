@@ -1,6 +1,6 @@
 package com.medsync.historico.application.services;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
 import com.medsync.historico.application.usecases.CreateMedicalHistoryUseCase;
 import com.medsync.historico.application.usecases.SaveNewAppointmentUseCase;
@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.medsync.historico.application.TestUtils.USER_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -36,15 +37,15 @@ class MedicalHistoryServiceTest {
         @Test
         @DisplayName("Should delegate creation to use case and return created medical history")
         void shouldDelegateCreationToUseCaseAndReturnCreatedMedicalHistory() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory expected = mock(MedicalHistory.class);
 
-            when(createMedicalHistoryUseCase.execute(event)).thenReturn(expected);
+            when(createMedicalHistoryUseCase.execute(input)).thenReturn(expected);
 
-            MedicalHistory result = medicalHistoryService.createMedicalHistory(event);
+            MedicalHistory result = medicalHistoryService.createMedicalHistory(input);
 
             assertEquals(expected, result);
-            verify(createMedicalHistoryUseCase).execute(event);
+            verify(createMedicalHistoryUseCase).execute(input);
         }
 
     }
@@ -55,36 +56,36 @@ class MedicalHistoryServiceTest {
         @Test
         @DisplayName("Should add appointment to existing medical history when found")
         void shouldAddAppointmentToExistingMedicalHistoryWhenFound() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory existing = mock(MedicalHistory.class);
             MedicalHistory updated = mock(MedicalHistory.class);
 
-            when(event.pacienteId()).thenReturn(1L);
+            when(input.pacienteId()).thenReturn(USER_ID);
             doReturn(existing)
-                .when(medicalHistoryService).getMedicalHistoryByPatientId(1L);
-            when(saveNewAppointmentUseCase.execute(event, existing)).thenReturn(updated);
+                .when(medicalHistoryService).getMedicalHistoryByPatientId(USER_ID);
+            when(saveNewAppointmentUseCase.execute(input, existing)).thenReturn(updated);
 
-            MedicalHistory result = medicalHistoryService.addAppointmentInMedicalHistory(event);
+            MedicalHistory result = medicalHistoryService.addAppointmentInMedicalHistory(input);
 
             assertEquals(updated, result);
-            verify(saveNewAppointmentUseCase).execute(event, existing);
+            verify(saveNewAppointmentUseCase).execute(input, existing);
         }
 
         @Test
         @DisplayName("Should create new medical history if not found when adding appointment")
         void shouldCreateNewMedicalHistoryIfNotFoundWhenAddingAppointment() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory created = mock(MedicalHistory.class);
 
-            when(event.pacienteId()).thenReturn(2L);
-            doThrow(new MedicalHistoryNotFoundException(2L))
-                .when(medicalHistoryService).getMedicalHistoryByPatientId(2L);
-            when(createMedicalHistoryUseCase.execute(event)).thenReturn(created);
+            when(input.pacienteId()).thenReturn(USER_ID);
+            doThrow(new MedicalHistoryNotFoundException(USER_ID))
+                .when(medicalHistoryService).getMedicalHistoryByPatientId(USER_ID);
+            when(createMedicalHistoryUseCase.execute(input)).thenReturn(created);
 
-            MedicalHistory result = medicalHistoryService.addAppointmentInMedicalHistory(event);
+            MedicalHistory result = medicalHistoryService.addAppointmentInMedicalHistory(input);
 
             assertEquals(created, result);
-            verify(createMedicalHistoryUseCase).execute(event);
+            verify(createMedicalHistoryUseCase).execute(input);
         }
 
     }

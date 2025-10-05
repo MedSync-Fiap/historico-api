@@ -1,6 +1,6 @@
 package com.medsync.historico.domain.entities;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Doctor {
 
-    private Long id;
+    private String id;
     private String name;
     private String specialty;
 
-    public Doctor(AppointmentEvent appointmentEvent) {
-        this.id = appointmentEvent.medicoId();
-        this.name = appointmentEvent.medicoNome();
-        this.specialty = appointmentEvent.medicoEspecialidade();
+    public Doctor(AppointmentInput input) {
+        this.id = input.medicoId();
+        this.name = input.medicoNome();
+        this.specialty = input.medicoEspecialidade();
     }
 
 }

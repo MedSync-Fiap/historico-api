@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.NoSuchElementException;
 
+import static com.medsync.historico.application.TestUtils.APPOINTMENT_ID;
+import static com.medsync.historico.application.TestUtils.USER_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -31,27 +33,23 @@ class GetAppointmentByIdUseCaseTest {
         @Test
         @DisplayName("Should return appointment when found by gateway")
         void shouldReturnAppointmentWhenFoundByGateway() {
-            Long appointmentId = 1L;
-            Long patientId = 2L;
             Appointment expected = mock(Appointment.class);
 
-            when(medicalHistoryGateway.findAppointmentById(appointmentId, patientId)).thenReturn(expected);
+            when(medicalHistoryGateway.findAppointmentById(APPOINTMENT_ID, USER_ID)).thenReturn(expected);
 
-            Appointment result = getAppointmentByIdUseCase.execute(appointmentId, patientId);
+            Appointment result = getAppointmentByIdUseCase.execute(APPOINTMENT_ID, USER_ID);
 
             assertEquals(expected, result);
-            verify(medicalHistoryGateway).findAppointmentById(appointmentId, patientId);
+            verify(medicalHistoryGateway).findAppointmentById(APPOINTMENT_ID, USER_ID);
         }
 
         @Test
         @DisplayName("Should throw MedicalHistoryNotFoundException when gateway throws NoSuchElementException")
         void shouldThrowMedicalHistoryNotFoundExceptionWhenGatewayThrowsNoSuchElementException() {
-            Long appointmentId = 1L;
-            Long patientId = 2L;
 
-            when(medicalHistoryGateway.findAppointmentById(appointmentId, patientId)).thenThrow(new NoSuchElementException());
+            when(medicalHistoryGateway.findAppointmentById(APPOINTMENT_ID, USER_ID)).thenThrow(new NoSuchElementException());
 
-            assertThrows(MedicalHistoryNotFoundException.class, () -> getAppointmentByIdUseCase.execute(appointmentId, patientId));
+            assertThrows(MedicalHistoryNotFoundException.class, () -> getAppointmentByIdUseCase.execute(APPOINTMENT_ID, USER_ID));
         }
 
     }

@@ -19,7 +19,7 @@ public enum EventType {
                 return eventType;
             }
         }
-        return EventType.CREATION;
+        return null;
     }
 
 }
