@@ -26,6 +26,10 @@ public class GraphqlExceptionResolver extends DataFetcherExceptionResolverAdapte
             return errorFromAnnotation.get();
         }
 
+        if (ex instanceof IllegalArgumentException) {
+            return buildError(env, ErrorType.BAD_REQUEST, ex.getMessage());
+        }
+
         log.error("Unexpected error occurred", ex);
         return buildError(env, ErrorType.INTERNAL_ERROR, "An unexpected error occurred: " + ex.getMessage());
     }

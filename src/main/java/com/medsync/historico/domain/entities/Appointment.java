@@ -1,6 +1,6 @@
 package com.medsync.historico.domain.entities;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.enums.AppointmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Appointment {
 
-    private Long id;
+    private String id;
     private Doctor doctor;
     private CreateUser createUser;
     private LocalDateTime appointmentDateTime;
@@ -22,23 +22,23 @@ public class Appointment {
     private String clinicalNotes;
     private List<ActionLog> actionLogs;
 
-    public Appointment(AppointmentEvent event, List<ActionLog> actionLogs) {
-        this.id = event.consultaId();
-        this.doctor = new Doctor(event);
-        this.createUser = new CreateUser(event);
-        this.appointmentDateTime = event.dataHora();
+    public Appointment(AppointmentInput newAppointmentInput, List<ActionLog> actionLogs) {
+        this.id = newAppointmentInput.consultaId();
+        this.doctor = new Doctor(newAppointmentInput);
+        this.createUser = new CreateUser(newAppointmentInput);
+        this.appointmentDateTime = newAppointmentInput.dataHora();
         this.status = AppointmentStatus.AGENDADA;
-        this.clinicalNotes = event.observacoes();
+        this.clinicalNotes = newAppointmentInput.observacoes();
         this.actionLogs = actionLogs;
     }
 
-    public void updateFieldsWithNewValues(AppointmentEvent event) {
-        this.appointmentDateTime = event.dataHora() != null ? event.dataHora() : this.appointmentDateTime;
-        this.status = event.status() != null ? AppointmentStatus.valueOf(event.status()) : this.status;
-        this.clinicalNotes = event.observacoes() != null ? event.observacoes() : this.clinicalNotes;
+    public void updateFieldsWithNewValues(AppointmentInput updateAppointmentInput) {
+        this.appointmentDateTime = updateAppointmentInput.dataHora() != null ? updateAppointmentInput.dataHora() : this.appointmentDateTime;
+        this.status = updateAppointmentInput.status() != null ? AppointmentStatus.valueOf(updateAppointmentInput.status()) : this.status;
+        this.clinicalNotes = updateAppointmentInput.observacoes() != null ? updateAppointmentInput.observacoes() : this.clinicalNotes;
     }
 
-    public void updateDoctor(AppointmentEvent event) {
+    public void updateDoctor(AppointmentInput event) {
         this.doctor = new Doctor(event);
     }
 

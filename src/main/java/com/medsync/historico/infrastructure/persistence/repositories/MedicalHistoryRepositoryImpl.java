@@ -29,13 +29,13 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     }
 
     @Override
-    public Optional<MedicalHistory> findByPatientId(Long patientId) {
+    public Optional<MedicalHistory> findByPatientId(String patientId) {
         return repository.findByPatientId(patientId)
                 .map(medicalHistoryMapper::toDomain);
     }
 
     @Override
-    public Appointment findAppointmentById(Long appointmentId, Long patientId) {
+    public Appointment findAppointmentById(String appointmentId, String patientId) {
         MedicalHistoryDocument medicalHistory = repository.findByPatientId(patientId)
                 .orElseThrow();
 

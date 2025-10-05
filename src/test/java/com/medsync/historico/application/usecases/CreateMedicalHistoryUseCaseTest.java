@@ -1,6 +1,6 @@
 package com.medsync.historico.application.usecases;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
 import com.medsync.historico.domain.entities.Patient;
@@ -34,12 +34,12 @@ class CreateMedicalHistoryUseCaseTest {
         @Test
         @DisplayName("Should create and save medical history with valid patient and appointment")
         void shouldCreateAndSaveMedicalHistoryWithValidPatientAndAppointment() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
             MedicalHistory expected = mock(MedicalHistory.class);
 
             when(medicalHistoryGateway.save(any(MedicalHistory.class))).thenReturn(expected);
 
-            MedicalHistory result = createMedicalHistoryUseCase.execute(event);
+            MedicalHistory result = createMedicalHistoryUseCase.execute(input);
 
             assertEquals(expected, result);
             verify(medicalHistoryGateway).save(any(MedicalHistory.class));
@@ -48,11 +48,11 @@ class CreateMedicalHistoryUseCaseTest {
         @Test
         @DisplayName("Should create medical history with a single appointment")
         void shouldCreateMedicalHistoryWithSingleAppointment() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
 
             when(medicalHistoryGateway.save(any(MedicalHistory.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            MedicalHistory result = createMedicalHistoryUseCase.execute(event);
+            MedicalHistory result = createMedicalHistoryUseCase.execute(input);
 
             List<Appointment> appointments = result.getAppointments();
             assertNotNull(appointments);
@@ -62,11 +62,11 @@ class CreateMedicalHistoryUseCaseTest {
         @Test
         @DisplayName("Should create medical history with non-null patient")
         void shouldCreateMedicalHistoryWithNonNullPatient() {
-            AppointmentEvent event = mock(AppointmentEvent.class);
+            AppointmentInput input = mock(AppointmentInput.class);
 
             when(medicalHistoryGateway.save(any(MedicalHistory.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            MedicalHistory result = createMedicalHistoryUseCase.execute(event);
+            MedicalHistory result = createMedicalHistoryUseCase.execute(input);
 
             Patient patient = result.getPatient();
             assertNotNull(patient);

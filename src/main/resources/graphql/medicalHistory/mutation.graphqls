@@ -1,38 +1,9 @@
 extend type Mutation {
-    salvarHistorico(input: SalvarHistoricoInput!): MedicalHistoryResponse!
-    atualizarHistorico(input: AtualizarHistoricoInput!): MedicalHistoryResponse!
+    saveNewAppointment(newAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
+    updateAppointment(updateAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
 }
 
-input SalvarHistoricoInput {
-    consultaId: ID!
-    dataHora: String!
-    status: String!
-    observacoes: String
-    tipoEvento: String!
-    timestamp: String!
-    
-    # Dados do paciente
-    pacienteId: ID!
-    pacienteNome: String!
-    pacienteCpf: String!
-    pacienteEmail: String!
-    pacienteDataNascimento: String!
-    
-    # Dados do médico
-    medicoId: ID!
-    medicoNome: String!
-    medicoCpf: String!
-    medicoEmail: String!
-    medicoEspecialidade: String!
-    
-    # Dados do usuário
-    usuarioId: ID!
-    usuarioNome: String!
-    usuarioEmail: String!
-    usuarioRole: String!
-}
-
-input AtualizarHistoricoInput {
+input AppointmentInput {
     consultaId: ID!
     dataHora: String!
     status: String!

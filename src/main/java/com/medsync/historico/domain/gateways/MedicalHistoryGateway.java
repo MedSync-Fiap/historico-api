@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface MedicalHistoryGateway {
 
     MedicalHistory save(MedicalHistory medicalHistory);
-    Optional<MedicalHistory> findByPatientId(Long patientId);
-    Appointment findAppointmentById(Long appointmentId, Long patientId);
+    Optional<MedicalHistory> findByPatientId(String patientId);
+    Appointment findAppointmentById(String appointmentId, String patientId);
     List<MedicalHistory> findAll();
 
 }

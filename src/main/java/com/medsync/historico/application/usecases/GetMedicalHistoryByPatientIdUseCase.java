@@ -14,7 +14,7 @@ public class GetMedicalHistoryByPatientIdUseCase {
 
     private final MedicalHistoryGateway medicalHistoryGateway;
 
-    public MedicalHistory execute(Long patientId) {
+    public MedicalHistory execute(String patientId) {
         Optional<MedicalHistory> medicalHistoryOpt = medicalHistoryGateway.findByPatientId(patientId);
         if (medicalHistoryOpt.isEmpty()) {
             throw new MedicalHistoryNotFoundException(patientId);
