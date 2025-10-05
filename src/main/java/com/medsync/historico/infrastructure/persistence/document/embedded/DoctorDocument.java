@@ -1,7 +1,7 @@
 package com.medsync.historico.infrastructure.persistence.document.embedded;
 
 public record DoctorDocument(
-        Long id,
+        String id,
         String name,
         String specialty
 ) {

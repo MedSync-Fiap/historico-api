@@ -1,2 +1,7 @@
 type Query {
+    # Base query type - extended by other schema files
+}
+
+type Mutation {
+    # Base mutation type - extended by other schema files
 }

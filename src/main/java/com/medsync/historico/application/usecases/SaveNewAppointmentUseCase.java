@@ -1,6 +1,6 @@
 package com.medsync.historico.application.usecases;
 
-import com.medsync.historico.application.dto.AppointmentEvent;
+import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.entities.ActionLog;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
@@ -17,10 +17,10 @@ public class SaveNewAppointmentUseCase {
 
     private final MedicalHistoryGateway medicalHistoryGateway;
 
-    public MedicalHistory execute(AppointmentEvent event, MedicalHistory medicalHistory) {
-        ActionLog actionLog = new ActionLog(event, ActionType.CREATION);
+    public MedicalHistory execute(AppointmentInput newAppointmentInput, MedicalHistory medicalHistory) {
+        ActionLog actionLog = new ActionLog(newAppointmentInput, ActionType.CREATION);
 
-        Appointment appointment = new Appointment(event, List.of(actionLog));
+        Appointment appointment = new Appointment(newAppointmentInput, List.of(actionLog));
 
         if (medicalHistory.getAppointments() != null) {
            medicalHistory.getAppointments().add(appointment);

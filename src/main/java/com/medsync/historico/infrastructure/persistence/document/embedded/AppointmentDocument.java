@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record AppointmentDocument(
-        Long id,
+        String id,
         AppointmentStatus status,
         DoctorDocument doctor,
         @Field("created_by") CreateUserDocument createdBy,

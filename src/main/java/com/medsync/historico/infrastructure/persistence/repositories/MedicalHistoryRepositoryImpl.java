@@ -10,6 +10,7 @@ import com.medsync.historico.infrastructure.persistence.mappers.MedicalHistoryMa
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,13 +29,13 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     }
 
     @Override
-    public Optional<MedicalHistory> findByPatientId(Long patientId) {
+    public Optional<MedicalHistory> findByPatientId(String patientId) {
         return repository.findByPatientId(patientId)
                 .map(medicalHistoryMapper::toDomain);
     }
 
     @Override
-    public Appointment findAppointmentById(Long appointmentId, Long patientId) {
+    public Appointment findAppointmentById(String appointmentId, String patientId) {
         MedicalHistoryDocument medicalHistory = repository.findByPatientId(patientId)
                 .orElseThrow();
 
@@ -43,5 +44,12 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
                 .findFirst()
                 .map(appointmentMapper::toDomain)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+    }
+
+    @Override
+    public List<MedicalHistory> findAll() {
+        return repository.findAll().stream()
+                .map(medicalHistoryMapper::toDomain)
+                .toList();
     }
 }
