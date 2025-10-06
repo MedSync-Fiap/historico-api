@@ -15,9 +15,12 @@ spring:
       locations: classpath:graphql/**/
       file-extensions: .graphqls
 
-
 server:
   port: 8081
+
+jwt:
+  public:
+    key: ${JWT_PUBLIC_KEY_PATH:classpath:certs/public_key.pem}
 
 app:
   name: medsync-historico
