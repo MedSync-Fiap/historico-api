@@ -1,6 +1,10 @@
 type MedicalHistoryResponse {
     patient: Patient!
-    appointments: [Appointment!]!
+    appointments(filter: AppointmentFilterInput): [Appointment!]!
+}
+
+input AppointmentFilterInput {
+    onlyFuture: Boolean
 }
 
 type Patient {
