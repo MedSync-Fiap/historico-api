@@ -17,6 +17,7 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)** e **Clean Archi
 - **Spring Boot 3.5.5**
 - **MongoDB** (banco de dados NoSQL)
 - **Spring GraphQL** (API GraphQL para consultas e mutations)
+- **Spring Security** (autenticação e autorização JWT)
 - **MapStruct** (mapeamento de objetos)
 - **Lombok** (redução de boilerplate)
 - **Gradle** (gerenciamento de dependências)
@@ -26,7 +27,7 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)** e **Clean Archi
 
 - Java 21
 - Gradle 8.5+
-- Docker
+- Docker e Docker Compose (para execução em containers)
 - MongoDB 7.0+
 
 ## 🛠️ Configuração e Execução
@@ -165,6 +166,8 @@ O serviço expõe uma API GraphQL completa para consultas e manipulação do his
 ### Queries Disponíveis
 
 #### 1. Buscar Histórico Médico por ID do Paciente
+
+**Buscar todos os agendamentos:**
 ```graphql
 query {
   getMedicalHistoryByPatientId(patientId: "550e8400-e29b-41d4-a716-446655440000") {
@@ -197,6 +200,31 @@ query {
 }
 ```
 
+**Buscar apenas agendamentos futuros:**
+```graphql
+query {
+  getMedicalHistoryByPatientId(patientId: "550e8400-e29b-41d4-a716-446655440000") {
+    patient {
+      id
+      name
+      cpf
+      email
+      dateOfBirth
+    }
+    appointments(filter: { onlyFuture: true }) {
+      id
+      appointmentDateTime
+      status
+      doctor {
+        id
+        name
+        specialty
+      }
+    }
+  }
+}
+```
+
 #### 2. Buscar Consulta Específica por ID
 ```graphql
 query {
@@ -215,6 +243,40 @@ query {
   }
 }
 ```
+
+### Filtros Disponíveis
+
+#### Filtro de Agendamentos Futuros
+
+O sistema permite filtrar agendamentos para exibir apenas consultas futuras (com `appointmentDateTime` posterior ao momento atual):
+
+**Parâmetro do Filtro:**
+- `onlyFuture`: Boolean (opcional)
+  - `true`: Retorna apenas agendamentos com data/hora futura
+  - `false` ou omitido: Retorna todos os agendamentos (comportamento padrão)
+
+**Exemplo de uso:**
+```graphql
+# Buscar apenas consultas futuras do paciente
+query {
+  getMedicalHistoryByPatientId(patientId: "550e8400-e29b-41d4-a716-446655440000") {
+    patient {
+      name
+    }
+    appointments(filter: { onlyFuture: true }) {
+      id
+      appointmentDateTime
+      status
+      doctor {
+        name
+        specialty
+      }
+    }
+  }
+}
+```
+
+> **💡 Dica**: O filtro `onlyFuture` é útil para interfaces que precisam exibir apenas os próximos agendamentos do paciente, como dashboards de consultas pendentes ou calendários de agendamentos futuros.
 
 ### Mutations Disponíveis
 
@@ -320,7 +382,98 @@ mutation {
 - **ActionType**: `CREATION`, `EDITION`, `CANCELLATION`, `COMPLETION`
 - **EventType**: `CRIADA`, `EDITADA`
 
-## 🔄 Integração com Serviço de Agendamento
+## 🛡️ Autenticação e Segurança
+
+### Configuração de Segurança por Profile
+
+O serviço implementa autenticação JWT com comportamento diferente baseado no **Spring Profile** ativo:
+
+#### Profile `local` (Desenvolvimento)
+- ✅ **GraphiQL**: Acesso livre sem autenticação
+- ✅ **GraphQL**: Acesso livre sem autenticação
+- 🎯 **Uso**: Desenvolvimento e testes locais
+
+#### Profiles de Produção (`!local`)
+- ✅ **GraphiQL**: Acesso livre (apenas interface)
+- 🔒 **GraphQL**: Requer token JWT válido
+- 🎯 **Uso**: Ambientes de produção e homologação
+
+### Obtendo Token de Acesso
+
+Para ambientes que não sejam `local`, é necessário obter um token JWT do serviço de agendamento:
+
+```bash
+# Endpoint para obter token
+GET http://localhost:8080/historico/token
+
+# Resposta:
+{
+    "token": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJtZWRzeW5jLWFnZW5kYW1lbnRvLWFwaSIsInN1YiI6Im0ybS1hZ2VuZGFtZW50by1zZXJ2aWNlIiwiYXVkIjoibWVkc3luYy1oaXN0b3JpY28tYXBpIiwiZXhwIjoxNzU5NzU5ODEzLCJpYXQiOjE3NTk3NTgwMTN9...",
+    "expiresAt": "2025-10-06T14:10:13.932658900Z"
+}
+```
+
+### Usando o Token no GraphiQL
+
+Para executar queries ou mutations no GraphiQL em ambientes protegidos:
+
+1. **Acesse o GraphiQL**: `http://localhost:8081/graphiql`
+2. **Configure o Header**: Clique em "Headers" (canto inferior esquerdo)
+3. **Adicione a Autenticação**:
+
+```json
+{
+  "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJtZWRzeW5jLWFnZW5kYW1lbnRvLWFwaSIsInN1YiI6Im0ybS1hZ2VuZGFtZW50by1zZXJ2aWNlIiwiYXVkIjoibWVkc3luYy1oaXN0b3JpY28tYXBpIiwiZXhwIjoxNzU5NzU1OTk5LCJpYXQiOjE3NTk3NTUwOTl9..."
+}
+```
+
+### Tratamento de Erros de Autenticação
+
+O sistema possui tratamento específico para erros de autenticação:
+
+#### Token Inválido ou Ausente
+```json
+{
+  "errors": [
+    {
+      "message": "Unauthorized Access - Invalid or missing token.",
+      "errorType": "UNAUTHORIZED"
+    }
+  ],
+  "data": null
+}
+```
+
+#### Token Expirado
+```json
+{
+  "errors": [
+    {
+      "message": "Expired Token - Please refresh your token and try again.",
+      "errorType": "UNAUTHORIZED"
+    }
+  ],
+  "data": null
+}
+```
+
+### Configuração de Profiles
+
+Para executar com profile específico:
+
+```bash
+# Profile local (sem autenticação)
+./gradlew bootRun --args='--spring.profiles.active=local'
+
+# Profile de produção (com autenticação)
+./gradlew bootRun --args='--spring.profiles.active=prod'
+
+# Via variável de ambiente
+export SPRING_PROFILES_ACTIVE=local
+./gradlew bootRun
+```
+
+## 🧪 Integração com Serviço de Agendamento
 
 ### Arquitetura de Comunicação
 O serviço recebe chamadas diretas do serviço de agendamento através de **mutations GraphQL**:
@@ -444,6 +597,10 @@ MONGO_HOST=localhost
 MONGO_PORT=27017
 MONGO_DB=medsync_db
 
+# Segurança JWT
+JWT_PUBLIC_KEY=classpath:certs/public_key.pem
+SPRING_PROFILES_ACTIVE=local  # ou prod
+
 # Configurações da Aplicação
 app.name=medsync-historico
 app.version=1.0.0
@@ -487,6 +644,19 @@ spring:
    - Verificar se `tipoEvento` para `saveNewAppointment` é "CRIADA"
    - Verificar se `tipoEvento` para `updateAppointment` é "EDITADA"
    - Caso contrário, será retornado erro `BAD_REQUEST`
+
+
+5. **Erro de autenticação (UNAUTHORIZED)**
+   - Verificar se o profile ativo requer autenticação (não é `local`)
+   - Obter token do endpoint: `GET http://localhost:8080/historico/token`
+   - Verificar se o token não está expirado
+   - Adicionar header `Authorization: Bearer <token>` nas requisições GraphQL
+   - No GraphiQL, configurar o header na seção "Headers"
+
+6. **Erro de token expirado**
+   - Obter um novo token do serviço de agendamento
+   - Verificar o campo `expiresAt` na resposta do token (fuso horário UTC)
+   - Configurar renovação automática se necessário
 
 ## 🎯 Funcionalidades Principais
 
