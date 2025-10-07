@@ -1,0 +1,11 @@
+query GetHistoryByPatient($patientId: ID!) {
+    getMedicalHistoryByPatientId(patientId: $patientId) {
+        patient {
+            id
+            name
+        }
+        appointments {
+            id
+        }
+    }
+}
