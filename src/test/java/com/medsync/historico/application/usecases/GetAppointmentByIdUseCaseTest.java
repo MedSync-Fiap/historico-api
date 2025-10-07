@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.NoSuchElementException;
 
-import static com.medsync.historico.application.TestUtils.APPOINTMENT_ID;
-import static com.medsync.historico.application.TestUtils.USER_ID;
+import static com.medsync.historico.TestUtils.APPOINTMENT_ID;
+import static com.medsync.historico.TestUtils.USER_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
