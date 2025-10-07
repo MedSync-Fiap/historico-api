@@ -2,9 +2,10 @@ package com.medsync.historico.application.services;
 
 import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
-import com.medsync.historico.application.usecases.CreateMedicalHistoryUseCase;
-import com.medsync.historico.application.usecases.SaveNewAppointmentUseCase;
+import com.medsync.historico.application.usecases.*;
+import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
+import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.medsync.historico.application.TestUtils.USER_ID;
+import java.util.List;
+
+import static com.medsync.historico.TestUtils.USER_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -26,6 +29,18 @@ class MedicalHistoryServiceTest {
 
     @Mock
     private CreateMedicalHistoryUseCase createMedicalHistoryUseCase;
+
+    @Mock
+    private UpdateAppointmentUseCase updateAppointmentUseCase;
+
+    @Mock
+    private GetMedicalHistoryByPatientIdUseCase getMedicalHistoryByPatientIdUseCase;
+
+    @Mock
+    private MedicalHistoryGateway medicalHistoryGateway;
+
+    @Mock
+    private GetAppointmentByIdUseCase getAppointmentByIdUseCase;
 
     @Spy
     @InjectMocks
@@ -90,5 +105,91 @@ class MedicalHistoryServiceTest {
 
     }
 
+    @Nested
+    class UpdateAppointmentInMedicalHistory {
+
+        @Test
+        @DisplayName("Should update appointment in existing medical history")
+        void shouldUpdateAppointmentInExistingMedicalHistory() {
+            AppointmentInput input = mock(AppointmentInput.class);
+            MedicalHistory existing = mock(MedicalHistory.class);
+            MedicalHistory updated = mock(MedicalHistory.class);
+
+            when(input.pacienteId()).thenReturn(USER_ID);
+            doReturn(existing)
+                    .when(medicalHistoryService).getMedicalHistoryByPatientId(USER_ID);
+            when(updateAppointmentUseCase.execute(input, existing)).thenReturn(updated);
+
+            MedicalHistory result = medicalHistoryService.updateAppointmentInMedicalHistory(input);
+
+            assertEquals(updated, result);
+            verify(updateAppointmentUseCase).execute(input, existing);
+        }
+
+    }
+
+    @Nested
+    class GetMedicalHistoryByPatientId {
+
+        @Test
+        @DisplayName("Should return medical history for valid patient id")
+        void shouldReturnMedicalHistoryForValidPatientId() {
+            MedicalHistory expected = mock(MedicalHistory.class);
+
+            when(getMedicalHistoryByPatientIdUseCase.execute(USER_ID)).thenReturn(expected);
+
+            MedicalHistory result = medicalHistoryService.getMedicalHistoryByPatientId(USER_ID);
+
+            assertEquals(expected, result);
+            verify(getMedicalHistoryByPatientIdUseCase).execute(USER_ID);
+        }
+
+        @Test
+        @DisplayName("Should throw MedicalHistoryNotFoundException for invalid patient id")
+        void shouldThrowMedicalHistoryNotFoundExceptionForInvalidPatientId() {
+            when(getMedicalHistoryByPatientIdUseCase.execute(USER_ID))
+                    .thenThrow(new MedicalHistoryNotFoundException(USER_ID));
+
+            assertThrows(MedicalHistoryNotFoundException.class, () -> medicalHistoryService.getMedicalHistoryByPatientId(USER_ID));
+        }
+
+    }
+
+    @Nested
+    class GetAppointmentById {
+
+        @Test
+        @DisplayName("Should return appointment for valid appointment and patient id")
+        void shouldReturnAppointmentForValidAppointmentAndPatientId() {
+            String appointmentId = "appointment-1";
+            Appointment expected = mock(Appointment.class);
+
+            when(getAppointmentByIdUseCase.execute(appointmentId, USER_ID)).thenReturn(expected);
+
+            Appointment result = medicalHistoryService.getAppointmentById(appointmentId, USER_ID);
+
+            assertEquals(expected, result);
+            verify(getAppointmentByIdUseCase).execute(appointmentId, USER_ID);
+        }
+
+    }
+
+    @Nested
+    class GetAllMedicalHistories {
+
+        @Test
+        @DisplayName("Should return all medical histories")
+        void shouldReturnAllMedicalHistories() {
+            List<MedicalHistory> expected = List.of(mock(MedicalHistory.class), mock(MedicalHistory.class));
+
+            when(medicalHistoryGateway.findAll()).thenReturn(expected);
+
+            List<MedicalHistory> result = medicalHistoryService.getAllMedicalHistories();
+
+            assertEquals(expected, result);
+            verify(medicalHistoryGateway).findAll();
+        }
+
+    }
 
 }

@@ -1,0 +1,8 @@
+query GetAppointment($appointmentId: ID!, $patientId: ID!) {
+    getAppointmentById(appointmentId: $appointmentId, patientId: $patientId) {
+        id
+        doctor {
+            name
+        }
+    }
+}

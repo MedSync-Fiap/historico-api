@@ -1,0 +1,10 @@
+mutation SaveNewAppointment($input: AppointmentInput!) {
+    saveNewAppointment(newAppointmentInput: $input) {
+        patient {
+            id
+        }
+        appointments {
+            id
+        }
+    }
+}
