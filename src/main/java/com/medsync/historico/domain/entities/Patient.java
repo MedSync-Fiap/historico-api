@@ -18,12 +18,4 @@ public class Patient {
     private LocalDate dateOfBirth;
     private String cpf;
 
-    public Patient(AppointmentInput input) {
-        this.id = input.pacienteId();
-        this.name = input.pacienteNome();
-        this.email = input.pacienteEmail();
-        this.dateOfBirth = input.pacienteDataNascimento();
-        this.cpf = input.pacienteCpf();
-    }
-
 }

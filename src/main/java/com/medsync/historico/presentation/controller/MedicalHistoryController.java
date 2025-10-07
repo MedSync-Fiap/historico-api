@@ -8,6 +8,8 @@ import com.medsync.historico.domain.enums.EventType;
 import com.medsync.historico.presentation.dto.AppointmentFilterInput;
 import com.medsync.historico.presentation.dto.AppointmentResponse;
 import com.medsync.historico.presentation.dto.MedicalHistoryResponse;
+import com.medsync.historico.presentation.dto.PatientInput;
+import com.medsync.historico.presentation.dto.PatientResponse;
 import com.medsync.historico.presentation.mappers.AppointmentDTOMapper;
 import com.medsync.historico.presentation.mappers.MedicalHistoryDTOMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,12 @@ public class MedicalHistoryController {
     @QueryMapping
     public MedicalHistoryResponse getMedicalHistoryByPatientId(@Argument String patientId) {
         MedicalHistory medicalHistory = medicalHistoryService.getMedicalHistoryByPatientId(patientId);
+        return medicalHistoryMapper.toResponse(medicalHistory);
+    }
+
+    @QueryMapping
+    public MedicalHistoryResponse getMedicalHistoryByPatientCpf(@Argument String patientCpf) {
+        MedicalHistory medicalHistory = medicalHistoryService.getMedicalHistoryByPatientCpf(patientCpf);
         return medicalHistoryMapper.toResponse(medicalHistory);
     }
 
@@ -73,6 +81,13 @@ public class MedicalHistoryController {
             throw new IllegalArgumentException("Unsupported event type for update: " + updateAppointmentInput.tipoEvento());
         }
 
+    }
+
+    @MutationMapping
+    public PatientResponse createPatient(@Argument PatientInput patientInput) {
+        PatientResponse patient = medicalHistoryService.createPatient(patientInput);
+        log.info("New patient created with ID: {}", patient.id());
+        return patient;
     }
 
     @SchemaMapping(typeName = "MedicalHistoryResponse", field = "appointments")

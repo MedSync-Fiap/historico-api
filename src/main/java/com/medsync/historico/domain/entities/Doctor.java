@@ -17,7 +17,7 @@ public class Doctor {
     public Doctor(AppointmentInput input) {
         this.id = input.medicoId();
         this.name = input.medicoNome();
-        this.specialty = input.medicoEspecialidade();
+        this.specialty = input.especialidadeNome();
     }
 
 }

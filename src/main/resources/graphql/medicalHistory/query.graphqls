@@ -1,4 +1,5 @@
 extend type Query {
     getMedicalHistoryByPatientId(patientId: ID!): MedicalHistoryResponse
+    getMedicalHistoryByPatientCpf(patientCpf: String!): MedicalHistoryResponse
     getAppointmentById(appointmentId: ID!, patientId: ID!): AppointmentResponse
 }

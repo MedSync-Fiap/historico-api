@@ -11,18 +11,20 @@ public record AppointmentInput(
         String tipoEvento,
         LocalDateTime timestamp,
 
+        // Apenas ID do paciente - o historico-api validará se existe
         String pacienteId,
-        String pacienteNome,
-        String pacienteCpf,
-        String pacienteEmail,
-        LocalDate pacienteDataNascimento,
-
+        
+        // Dados completos do médico
         String medicoId,
         String medicoNome,
         String medicoCpf,
         String medicoEmail,
-        String medicoEspecialidade,
-
+        
+        // Dados completos da especialidade
+        String especialidadeId,
+        String especialidadeNome,
+        
+        // Dados completos do usuário
         String usuarioId,
         String usuarioNome,
         String usuarioEmail,
