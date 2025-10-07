@@ -1,6 +1,7 @@
 extend type Mutation {
     saveNewAppointment(newAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
     updateAppointment(updateAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
+    createPatient(patientInput: PatientInput!): PatientResponse!
 }
 
 input AppointmentInput {
@@ -11,23 +12,41 @@ input AppointmentInput {
     tipoEvento: String!
     timestamp: String!
     
-    # Dados do paciente
+    # Apenas ID do paciente - o historico-api validará se existe
     pacienteId: ID!
-    pacienteNome: String!
-    pacienteCpf: String!
-    pacienteEmail: String!
-    pacienteDataNascimento: String!
     
-    # Dados do médico
+    # Dados completos do médico
     medicoId: ID!
     medicoNome: String!
     medicoCpf: String!
     medicoEmail: String!
-    medicoEspecialidade: String!
     
-    # Dados do usuário
+    # Dados completos da especialidade
+    especialidadeId: ID!
+    especialidadeNome: String!
+    
+    # Dados completos do usuário
     usuarioId: ID!
     usuarioNome: String!
     usuarioEmail: String!
     usuarioRole: String!
+}
+
+input PatientInput {
+    nome: String!
+    cpf: String!
+    email: String!
+    dataNascimento: String!
+    observacoes: String
+}
+
+type PatientResponse {
+    id: ID!
+    nome: String!
+    cpf: String!
+    email: String!
+    dataNascimento: String!
+    observacoes: String
+    ativo: Boolean!
+    criadoEm: String!
 }

@@ -3,6 +3,7 @@ package com.medsync.historico.infrastructure.persistence.repositories;
 import com.medsync.historico.application.exceptions.AppointmentNotFoundException;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
+import com.medsync.historico.domain.entities.Patient;
 import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
 import com.medsync.historico.infrastructure.persistence.document.MedicalHistoryDocument;
 import com.medsync.historico.infrastructure.persistence.mappers.AppointmentMapper;
@@ -35,6 +36,12 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     }
 
     @Override
+    public Optional<MedicalHistory> findByPatientCpf(String patientCpf) {
+        return repository.findByPatientCpf(patientCpf)
+                .map(medicalHistoryMapper::toDomain);
+    }
+
+    @Override
     public Appointment findAppointmentById(String appointmentId, String patientId) {
         MedicalHistoryDocument medicalHistory = repository.findByPatientId(patientId)
                 .orElseThrow();
@@ -51,5 +58,18 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
         return repository.findAll().stream()
                 .map(medicalHistoryMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Patient> findPatientById(String patientId) {
+        return repository.findByPatientId(patientId)
+                .map(MedicalHistoryDocument::getPatient)
+                .map(patientDocument -> new Patient(
+                    patientDocument.id(),
+                    patientDocument.name(),
+                    patientDocument.email(),
+                    patientDocument.dateOfBirth(),
+                    patientDocument.cpf()
+                ));
     }
 }
