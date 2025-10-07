@@ -529,15 +529,32 @@ src/test/java/com/medsync/historico/
 │   │   └── MedicalHistoryServiceTest.java
 │   └── usecases/
 │       ├── CreateMedicalHistoryUseCaseTest.java
+│       ├── GetMedicalHistoryByPatientIdUseCaseTest.java
 │       ├── SaveNewAppointmentUseCaseTest.java
 │       ├── UpdateAppointmentUseCaseTest.java
 │       └── GetAppointmentByIdUseCaseTest.java
+└── presentation/
+    └── controller/
+        └── MedicalHistoryControllerTest.java
 ```
 
 ### Cobertura de Testes
 
+#### Testes de Controller GraphQL
+- ✅ **Queries GraphQL**: Testes das queries `getMedicalHistoryByPatientId` e `getAppointmentById`
+- ✅ **Mutations GraphQL**: Testes das mutations `saveNewAppointment` e `updateAppointment`
+- ✅ **Filtro de Agendamentos**: Testes do filtro `onlyFuture` em todos os cenários
+  - Filtro `null` (retorna todos os agendamentos)
+  - `onlyFuture: false` (retorna todos os agendamentos)
+  - `onlyFuture: true` (retorna apenas agendamentos futuros)
+  - Cenário sem agendamentos futuros (retorna lista vazia)
+- ✅ **Validação de Entrada**: Testes de tipos de evento inválidos
+- ✅ **Mapeamento de DTOs**: Verificação dos mappers entre entidades e responses
+- ✅ **Integração GraphQL**: Uso do `@GraphQlTest` para testes de integração
+
 #### Testes de Use Cases
 - ✅ **Criação de Histórico**: Criação de novo histórico médico
+- ✅ **Busca de Histórico**: Buscar histórico médico completo por ID do paciente
 - ✅ **Adição de Consulta**: Adicionar consulta ao histórico existente
 - ✅ **Atualização de Consulta**: Atualizar dados de consulta existente
 - ✅ **Consulta por ID**: Buscar consulta específica
@@ -554,8 +571,16 @@ src/test/java/com/medsync/historico/
 # Executar todos os testes
 ./gradlew test
 
-# Executar testes específicos
+# Executar testes específicos por categoria
 ./gradlew test --tests "*UseCaseTest"
+./gradlew test --tests "*ControllerTest"
+./gradlew test --tests "*ServiceTest"
+
+# Executar apenas testes GraphQL da controller
+./gradlew test --tests "MedicalHistoryControllerTest"
+
+# Executar testes do filtro de agendamentos
+./gradlew test --tests "*GetAppointmentsWithFiltering*"
 
 # Executar com relatório de cobertura
 ./gradlew test jacocoTestReport
@@ -566,7 +591,37 @@ src/test/java/com/medsync/historico/
 - **JUnit 5**: Framework de testes
 - **Mockito**: Para mocks e stubs
 - **Spring Test**: Contexto de teste do Spring
+- **Spring GraphQL Test**: Testes de integração GraphQL com `@GraphQlTest`
+- **GraphQlTester**: Para executar e validar queries/mutations GraphQL
 - **Embedded MongoDB**: Para testes de integração
+
+### Funcionalidades Testadas
+
+#### Filtro de Agendamentos Futuros
+Os testes cobrem todos os cenários do filtro `onlyFuture`:
+
+```java
+// Teste com filtro true - apenas agendamentos futuros
+@Test
+void getAppointments_OnlyFutureTrue_ReturnsOnlyFutureAppointments()
+
+// Teste com filtro false - todos os agendamentos
+@Test
+void getAppointments_OnlyFutureFalse_ReturnsAllAppointments()
+
+// Teste com filtro null - todos os agendamentos
+@Test
+void getAppointments_FilterNull_ReturnsAllAppointments()
+```
+
+#### Testes GraphQL End-to-End
+Utilização de arquivos `.graphql` para testes realistas:
+
+- `getHistoryByPatient.graphql`: Query básica de histórico
+- `getHistoryByPatientWithFutureAppointments.graphql`: Query com filtro
+- `getHistoryByPatientWithAllAppointments.graphql`: Query sem filtro
+- `saveNewAppointment.graphql`: Mutation de criação
+- `updateAppointment.graphql`: Mutation de atualização
 
 ## 📝 Logs
 
