@@ -1,6 +1,5 @@
 package com.medsync.historico.domain.entities;
 
-import com.medsync.historico.application.dto.AppointmentInput;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,9 +12,13 @@ import java.time.LocalDate;
 public class Patient {
 
     private String id;
-    private String name;
+    private String nome;
     private String email;
-    private LocalDate dateOfBirth;
+    private String dataNascimento;
     private String cpf;
+    private String observacoes;
+    private Boolean ativo;
+    private String criadoEm;
+    private String atualizadoEm;
 
 }

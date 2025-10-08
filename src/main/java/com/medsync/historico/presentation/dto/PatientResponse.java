@@ -10,5 +10,6 @@ public record PatientResponse(
     String dataNascimento,
     String observacoes,
     Boolean ativo,
-    LocalDateTime criadoEm
+    String criadoEm,
+    String atualizadoEm
 ) {}

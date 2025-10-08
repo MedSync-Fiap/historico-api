@@ -2,6 +2,7 @@ extend type Mutation {
     saveNewAppointment(newAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
     updateAppointment(updateAppointmentInput: AppointmentInput!): MedicalHistoryResponse!
     createPatient(patientInput: PatientInput!): PatientResponse!
+    updatePatient(patientId: ID!, patientInput: PatientInput!): PatientResponse!
 }
 
 input AppointmentInput {
@@ -49,4 +50,5 @@ type PatientResponse {
     observacoes: String
     ativo: Boolean!
     criadoEm: String!
+    atualizadoEm: String
 }

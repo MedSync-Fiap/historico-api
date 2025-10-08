@@ -4,6 +4,7 @@ import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.application.services.MedicalHistoryService;
 import com.medsync.historico.domain.entities.Appointment;
 import com.medsync.historico.domain.entities.MedicalHistory;
+import com.medsync.historico.domain.entities.Patient;
 import com.medsync.historico.domain.enums.EventType;
 import com.medsync.historico.presentation.dto.AppointmentFilterInput;
 import com.medsync.historico.presentation.dto.AppointmentResponse;
@@ -90,6 +91,13 @@ public class MedicalHistoryController {
         return patient;
     }
 
+    @MutationMapping
+    public PatientResponse updatePatient(@Argument String patientId, @Argument PatientInput patientInput) {
+        PatientResponse patient = medicalHistoryService.updatePatient(patientId, patientInput);
+        log.info("Patient updated with ID: {}", patient.id());
+        return patient;
+    }
+
     @SchemaMapping(typeName = "MedicalHistoryResponse", field = "appointments")
     public List<Appointment> getAppointments(MedicalHistoryResponse history, @Argument AppointmentFilterInput filter) {
         List<Appointment> allAppointments = history.getAppointments();
@@ -102,6 +110,16 @@ public class MedicalHistoryController {
         return allAppointments.stream()
                 .filter(appointment -> appointment.getAppointmentDateTime().isAfter(now))
                 .toList();
+    }
+
+    @SchemaMapping(typeName = "Patient", field = "name")
+    public String getPatientName(Patient patient) {
+        return patient.getNome();
+    }
+
+    @SchemaMapping(typeName = "Patient", field = "dateOfBirth")
+    public String getPatientDateOfBirth(Patient patient) {
+        return patient.getDataNascimento();
     }
 
 }

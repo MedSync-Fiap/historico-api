@@ -4,6 +4,7 @@ import com.medsync.historico.application.dto.AppointmentInput;
 import com.medsync.historico.domain.entities.Patient;
 import com.medsync.historico.presentation.dto.PatientInput;
 import com.medsync.historico.presentation.dto.PatientResponse;
+import com.medsync.historico.presentation.mappers.PatientDtoMapper;
 import com.medsync.historico.application.exceptions.MedicalHistoryNotFoundException;
 import com.medsync.historico.application.usecases.*;
 import com.medsync.historico.domain.entities.Appointment;
@@ -23,7 +24,9 @@ public class MedicalHistoryService {
     private final CreateMedicalHistoryUseCase createMedicalHistoryUseCase;
     private final UpdateAppointmentUseCase updateAppointmentUseCase;
     private final GetAppointmentByIdUseCase getAppointmentByIdUseCase;
+    private final UpdatePatientUseCase updatePatientUseCase;
     private final MedicalHistoryGateway medicalHistoryGateway;
+    private final PatientDtoMapper patientDtoMapper;
 
     public MedicalHistory createMedicalHistory(AppointmentInput input) {
         return createMedicalHistoryUseCase.execute(input);
@@ -64,10 +67,15 @@ public class MedicalHistoryService {
         // Criar entidade Patient
         Patient patient = new Patient();
         patient.setId(java.util.UUID.randomUUID().toString());
-        patient.setName(patientInput.nome());
+        patient.setNome(patientInput.nome());
         patient.setCpf(patientInput.cpf());
         patient.setEmail(patientInput.email());
-        patient.setDateOfBirth(java.time.LocalDate.parse(patientInput.dataNascimento()));
+        patient.setDataNascimento(patientInput.dataNascimento());
+        patient.setObservacoes(patientInput.observacoes());
+        patient.setAtivo(true);
+        String now = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        patient.setCriadoEm(now);
+        patient.setAtualizadoEm(now);
         
         // Criar histórico médico vazio para o paciente
         MedicalHistory medicalHistory = new MedicalHistory();
@@ -78,16 +86,11 @@ public class MedicalHistoryService {
         MedicalHistory savedHistory = medicalHistoryGateway.save(medicalHistory);
         Patient savedPatient = savedHistory.getPatient();
         
-        return new PatientResponse(
-            savedPatient.getId(),
-            savedPatient.getName(),
-            savedPatient.getCpf(),
-            savedPatient.getEmail(),
-            savedPatient.getDateOfBirth().toString(),
-            patientInput.observacoes(),
-            true,
-            java.time.LocalDateTime.now()
-        );
+        return patientDtoMapper.toResponse(savedPatient);
+    }
+
+    public PatientResponse updatePatient(String patientId, PatientInput patientInput) {
+        return updatePatientUseCase.execute(patientId, patientInput);
     }
 
 }

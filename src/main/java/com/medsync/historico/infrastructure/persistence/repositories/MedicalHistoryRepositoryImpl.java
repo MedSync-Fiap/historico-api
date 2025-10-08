@@ -8,6 +8,7 @@ import com.medsync.historico.domain.gateways.MedicalHistoryGateway;
 import com.medsync.historico.infrastructure.persistence.document.MedicalHistoryDocument;
 import com.medsync.historico.infrastructure.persistence.mappers.AppointmentMapper;
 import com.medsync.historico.infrastructure.persistence.mappers.MedicalHistoryMapper;
+import com.medsync.historico.infrastructure.persistence.mappers.PatientMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,7 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     private final MedicalHistoryMongoRepository repository;
     private final MedicalHistoryMapper medicalHistoryMapper;
     private final AppointmentMapper appointmentMapper;
+    private final PatientMapper patientMapper;
 
     @Override
     public MedicalHistory save(MedicalHistory medicalHistory) {
@@ -37,7 +39,7 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
 
     @Override
     public Optional<MedicalHistory> findByPatientCpf(String patientCpf) {
-        return repository.findByPatientCpf(patientCpf)
+        return repository.findFirstByPatientCpf(patientCpf)
                 .map(medicalHistoryMapper::toDomain);
     }
 
@@ -64,12 +66,6 @@ public class MedicalHistoryRepositoryImpl implements MedicalHistoryGateway {
     public Optional<Patient> findPatientById(String patientId) {
         return repository.findByPatientId(patientId)
                 .map(MedicalHistoryDocument::getPatient)
-                .map(patientDocument -> new Patient(
-                    patientDocument.id(),
-                    patientDocument.name(),
-                    patientDocument.email(),
-                    patientDocument.dateOfBirth(),
-                    patientDocument.cpf()
-                ));
+                .map(patientMapper::toDomain);
     }
 }

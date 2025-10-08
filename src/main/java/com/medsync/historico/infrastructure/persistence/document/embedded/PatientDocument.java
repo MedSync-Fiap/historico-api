@@ -7,5 +7,9 @@ public record PatientDocument
     String name,
     String cpf,
     String email,
-    LocalDate dateOfBirth
+    LocalDate dateOfBirth,
+    String observacoes,
+    Boolean ativo,
+    String criadoEm,
+    String atualizadoEm
 ) {}
