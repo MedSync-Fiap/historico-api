@@ -102,7 +102,7 @@ public class MedicalHistoryController {
     public List<Appointment> getAppointments(MedicalHistoryResponse history, @Argument AppointmentFilterInput filter) {
         List<Appointment> allAppointments = history.getAppointments();
 
-        if (filter == null || filter.onlyFuture() == null || !filter.onlyFuture()) {
+        if (filter == null || filter.onlyFuture() == null || Boolean.FALSE.equals(filter.onlyFuture())) {
             return allAppointments;
         }
 

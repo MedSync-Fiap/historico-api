@@ -1,0 +1,10 @@
+mutation UpdateAppointment($input: AppointmentInput!) {
+    updateAppointment(updateAppointmentInput: $input) {
+        patient {
+            id
+        }
+        appointments {
+            id
+        }
+    }
+}
